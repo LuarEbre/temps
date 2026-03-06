@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> temps </title>
+
+<link rel="stylesheet" href="temps.css">
+<link rel="icon" type="image/x-icon" href="Images/Logo/temps_alt_alt.png">
+</head>
+
+<body>
+
+<div class="landing">
+    <div class="copyright-text" id="copyright-text"></div>
+    <div class="landing-logo"></div>
+    <div class="landing-popup">Click anywhere to begin!</div>
+</div>
+
+<div class="split-container">
+    <div class="split-side split-right"></div>
+    <div class="split-side split-left"></div>
+
+    <div class="copyright-right">
+        <div class="image-copyright" id="copyright-right">Image: <a href="https://google.com/" target="_blank">Jane Elizabeth Doe</a></div>
+        <div class="image-copyright"><i>provided by Pexels</i></div>
+    </div>
+
+    <div class="copyright-left">
+        <div class="image-copyright" id="copyright-right">Image: <a href="https://google.com/" target="_blank">John William Doe</a></div>
+        <div class="image-copyright"><i>provided by Pexels</i></div>
+    </div>
+
+    <div class="center-piece">
+        <div class="strip-base"></div>
+        <div class="circle-base"></div>
+        <div class="strip-fill"></div>
+        <div class="circle-fill"></div>
+        <div class="vs-text">vs</div>
+    </div>
+
+    <div class="left-half">
+        <h2 id="left-city">City 1's</h2>
+        <h3 data-text="current temperature">current temperature is</h3>
+        <h1 data-text="AB.CD°C" id="left-temp">AB.CD°C</h1>
+        <div class="time-block">
+            <div class="local-time">LOCAL TIME:</div>
+            <h2 id="local-time-left">12:34 AM</h2>
+        </div>
+    </div>
+
+    <div class="right-half">
+        <h2 id="right-city">City 2's</h2>
+        <h3>current temperature is</h3>
+        <button id="higher-button">HIGHER</button><br>
+        <button id="lower-button">LOWER</button>
+        <h3>than City 1's current temperature</h3>
+        <div class="time-block">
+            <div class="local-time">LOCAL TIME:</div>
+            <h2 id="local-time-left">4:56 PM</h2>
+        </div>
+    </div>
+
+</div>
+
+<script src="temps.js"></script>
+</body>
+
+</html>
