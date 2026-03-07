@@ -1,15 +1,15 @@
 let allCities = [];
 let cumulativeWeights = [];
 let totalWeight = 0;
-let city1 = null;
-let city2 = null;
-let nextCity = null;
-let cityImage1 = null;
-let cityImage2 = null;
-let nextCityImage = null;
-let cityWeather1 = null;
-let cityWeather2 = null;
-let nextCityWeather = null;
+
+let cityObjects = [
+    // left city
+    { city: null, image: null, weather: null },
+    // right city
+    { city: null, image: null, weather: null },
+    // cached city
+    { city: null, image: null, weather: null }
+];
 
 // game starts in Celsius, with later additions adding a unit switching button
 let unit = "C";
@@ -191,57 +191,57 @@ function getWeightedRandomCity() {
 // only used once for the intial drawing of 2 cities
 async function drawTwoRandomCities() 
 {
-    city1 = getWeightedRandomCity();
-    city2 = getWeightedRandomCity();
+    cityObjects[0].city = getWeightedRandomCity();
+    cityObjects[1].city = getWeightedRandomCity();
     // already fetch the next cities image to decrease loading time
-    nextCity = getWeightedRandomCity();
+    cityObjects[2].city = getWeightedRandomCity();
 
-    while (city1.id === city2.id) {
-        city2 = getWeightedRandomCity();
+    while (cityObjects[0].city.id === cityObjects[1].city.id) {
+        cityObjects[1].city = getWeightedRandomCity();
     }
 
-    while (city2.id == nextCity.id) {
-        nextCity = getWeightedRandomCity();
+    while (cityObjects[1].city.id == cityObjects[2].city.id) {
+        cityObjects[2].city = getWeightedRandomCity();
     }
 
     // apply styles which can already be applied, with fallback images before the images have been loaded
     applyStyles();
 
-    console.log(`Fetching image for ${city1.city_ascii}...`);
-    cityImage1 = await fetchCityImage(city1);
-    cityWeather1 = await getWeatherInCity(city1);
+    console.log(`Fetching image for ${cityObjects[0].city.city_ascii}...`);
+    cityObjects[0].image = await fetchCityImage(cityObjects[0].city);
+    cityObjects[0].weather = await getWeatherInCity(cityObjects[0].city);
     
-    console.log(`Fetching image for ${city2.city_ascii}...`);
-    cityImage2 = await fetchCityImage(city2);
-    cityWeather2 = await getWeatherInCity(city2);
+    console.log(`Fetching image for ${cityObjects[1].city.city_ascii}...`);
+    cityObjects[1].image = await fetchCityImage(cityObjects[1].city);
+    cityObjects[1].weather = await getWeatherInCity(cityObjects[1].city);
 
     // apply styles once both images & weather are loaded
     applyStyles();
 
-    console.log(`Fetching image for ${nextCity.city_ascii}...`);
-    nextCityImage = await fetchCityImage(nextCity);
-    nextCityWeather = await getWeatherInCity(nextCity);
+    console.log(`Fetching image for ${cityObjects[2].city.city_ascii}...`);
+    cityObjects[2].image = await fetchCityImage(cityObjects[2].city);
+    cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
 }
 
 async function cycleCities() {
 
-    city1 = city2;
-    city2 = nextCity;
-    cityImage1 = cityImage2;
-    cityImage2 = nextCityImage;
-    cityWeather1 = cityWeather2;
-    cityWeather2 = nextCityWeather;
+    cityObjects[0].city = cityObjects[1].city;
+    cityObjects[1].city = cityObjects[2].city;
+    cityObjects[0].image = cityObjects[1].image;
+    cityObjects[1].image = cityObjects[2].image;
+    cityObjects[0].weather = cityObjects[1].weather;
+    cityObjects[1].weather = cityObjects[2].weather;
     applyStyles();
 
     // get new cached city + image after cycling
-    nextCity = getWeightedRandomCity();
+    cityObjects[2].city = getWeightedRandomCity();
 
     // ensure unique next city
-    while (nextCity.id === city1.id || nextCity.id === city2.id) {
-        nextCity = getWeightedRandomCity();
+    while (cityObjects[2].city.id === cityObjects[0].city.id || cityObjects[2].city.id === cityObjects[1].city.id) {
+        cityObjects[2].city = getWeightedRandomCity();
     }
-    nextCityImage = await fetchCityImage(nextCity);
-    nextCityWeather = await getWeatherInCity(nextCity);
+    cityObjects[2].image = await fetchCityImage(cityObjects[2].city);
+    cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
 }
 
 function formatTemperature(celsiusTemp) {
@@ -252,27 +252,43 @@ function formatTemperature(celsiusTemp) {
     }
 }
 
+function swapUnits() {
+    // TODO add button + change button's appearance based on current unit
+    if(unit=="C") unit="F";
+    else unit="C";
+    applyTemperature();
+}
+
+function applyTemperature() {
+
+    const leftTemperature = document.getElementById("left-temp");
+
+    if(cityObjects[0].weather) {
+        leftTemperature.innerHTML = `${formatTemperature(cityObjects[0].weather.temperature)}°${unit}`;
+    } else {
+        leftTemperature.innerHTML = `--.--°${unit}`;
+    }
+}
 function applyStyles() {
 
     // change UI strings to match cities
-    document.getElementById("left-city").innerHTML = `${city1.city_ascii}, ${city1.country}'s`;
-    document.getElementById("right-city").innerHTML = `${city2.city_ascii}, ${city2.country}'s`;
-    document.getElementById("left-city-2").innerHTML = `than ${city1.city_ascii}'s current temperature`;
+    document.getElementById("left-city").innerHTML = `${cityObjects[0].city.city_ascii}, ${cityObjects[0].city.country}'s`;
+    document.getElementById("right-city").innerHTML = `${cityObjects[1].city.city_ascii}, ${cityObjects[1].city.country}'s`;
+    document.getElementById("left-city-2").innerHTML = `than ${cityObjects[0].city.city_ascii}'s current temperature`;
 
     const leftSide = document.querySelector('.split-left');
     const leftCopyright = document.querySelector("#copyright-left a");
     const rightSide = document.querySelector('.split-right');
     const rightCopyright = document.querySelector("#copyright-right a");
-    const leftTemperature = document.getElementById("left-temp");
     const leftTime = document.getElementById("local-time-left");
     const rightTime = document.getElementById("local-time-right");
 
     // change background images to match cities
     // change photography accredation to match image
-    if (cityImage1) {
-        leftSide.style.backgroundImage = `url('${cityImage1.url}')`;
-        leftCopyright.href = cityImage1.photographerLink;
-        leftCopyright.innerText = cityImage1.photographer;
+    if (cityObjects[0].image) {
+        leftSide.style.backgroundImage = `url('${cityObjects[0].image.url}')`;
+        leftCopyright.href = cityObjects[0].image.photographerLink;
+        leftCopyright.innerText = cityObjects[0].image.photographer;
         document.getElementById("accreditation-left").innerHTML = "<i>provided by Pexels</i>"
     } else {
         leftSide.style.backgroundImage = `url(https://placehold.co/1920x1080?text=?)`;
@@ -281,10 +297,10 @@ function applyStyles() {
         document.getElementById("accreditation-left").innerHTML = ""
     }
 
-    if (cityImage2) {
-        rightSide.style.backgroundImage = `url('${cityImage2.url}')`;
-        rightCopyright.href = cityImage2.photographerLink;
-        rightCopyright.innerText = cityImage2.photographer;
+    if (cityObjects[1].image) {
+        rightSide.style.backgroundImage = `url('${cityObjects[1].image.url}')`;
+        rightCopyright.href = cityObjects[1].image.photographerLink;
+        rightCopyright.innerText = cityObjects[1].image.photographer;
         document.getElementById("accreditation-right").innerHTML = "<i>provided by Pexels</i>"
     } else {
         rightSide.style.backgroundImage = `url(https://placehold.co/1920x1080?text=?)`;
@@ -294,16 +310,14 @@ function applyStyles() {
     }
 
     // update left side's temperature string as well as both local times
-    if (cityWeather1) {
-        leftTemperature.innerHTML = `${formatTemperature(cityWeather1.temperature)}°${unit}`;
-        leftTime.innerHTML = cityWeather1.localTime;
+    if (cityObjects[0].weather) {
+        leftTime.innerHTML = cityObjects[0].weather.localTime;
     } else {
-        leftTemperature.innerHTML = `--.--°${unit}`;
         leftTime.innerHTML = "--:-- XX"
     }
 
-    if(cityWeather2) {
-        rightTime.innerHTML = cityWeather2.localTime;
+    if(cityObjects[1].weather) {
+        rightTime.innerHTML = cityObjects[1].weather.localTime;
     } else {
         rightTime.innerHTML = "--:-- XX"
     }
