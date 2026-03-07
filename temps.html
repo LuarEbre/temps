@@ -23,13 +23,13 @@
     <div class="split-side split-left"></div>
 
     <div class="copyright-right">
-        <div class="image-copyright" id="copyright-right">Image: <a href="https://google.com/" target="_blank">Jane Elizabeth Doe</a></div>
-        <div class="image-copyright"><i>provided by Pexels</i></div>
+        <div class="image-copyright" id="copyright-right">Image: <a href="" target="_blank"></a></div>
+        <div class="image-copyright" id="accreditation-right"><i>provided by Pexels</i></div>
     </div>
 
     <div class="copyright-left">
-        <div class="image-copyright" id="copyright-right">Image: <a href="https://google.com/" target="_blank">John William Doe</a></div>
-        <div class="image-copyright"><i>provided by Pexels</i></div>
+        <div class="image-copyright" id="copyright-left">Image: <a href="" target="_blank"></a></div>
+        <div class="image-copyright" id="accreditation-left"><i>provided by Pexels</i></div>
     </div>
 
     <div class="center-piece">
@@ -42,8 +42,8 @@
 
     <div class="left-half">
         <h2 id="left-city">City 1's</h2>
-        <h3 data-text="current temperature">current temperature is</h3>
-        <h1 data-text="AB.CD°C" id="left-temp">AB.CD°C</h1>
+        <h3>current temperature is</h3>
+        <h1 id="left-temp">AB.CD°C</h1>
         <div class="time-block">
             <div class="local-time">LOCAL TIME:</div>
             <h2 id="local-time-left">12:34 AM</h2>
@@ -53,19 +53,25 @@
     <div class="right-half">
         <h2 id="right-city">City 2's</h2>
         <h3>current temperature is</h3>
-        <button id="higher-button">HIGHER</button><br>
-        <button id="lower-button">LOWER</button>
+        <button id="higher-button">
+            HIGHER
+            <img src="Images/SVGs/up.svg" class="btn-icon">
+        </button><br>
+        <button id="lower-button">
+            LOWER
+            <img src="Images/SVGs/down.svg" class="btn-icon">
+        </button>
         <h3 id="left-city-2">than City 1's current temperature</h3>
         <div class="time-block">
             <div class="local-time">LOCAL TIME:</div>
-            <h2 id="local-time-left">4:56 PM</h2>
+            <h2 id="local-time-right">4:56 PM</h2>
         </div>
     </div>
 
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-y
+<script src="config.js"></script>
 <script src="temps.js"></script>
 </body>
 

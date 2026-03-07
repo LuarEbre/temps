@@ -247,7 +247,8 @@ body, html {
     transform: translateX(-50%); 
     
     text-align: center; 
-    width: 100%;
+    text-wrap: balance;
+    width: 80%;
 
     font-size: clamp(2rem, 3.5vw, 4rem);
 }
@@ -279,41 +280,65 @@ body, html {
 }
 
 #higher-button, #lower-button {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
     position: relative;
     left: 50%;
 
     transform: translateX(-50%); 
     
     margin-bottom: 5%;
-    text-align: left;
+    
+    height: 10%;
     width: 40%;
 
-    border: 3px solid #000;
+    border: .2rem solid transparent;
+    border-radius: 0.4rem;
 
-    font-size: clamp(2rem, 3.5vw, 6rem);
-    color: white !important;
+    font-size: clamp(1rem, 2vw, 3.5rem);
+    text-align: left;
 
-    background-color: rgb(21,21,21,.2);
+    padding-left: 2%;
+    padding-right: 2%;
+    
+    color: #f1f1f1 !important;
+    transition: all 0.225s ease-in-out;
 }
 
 #higher-button {
     margin-bottom: 1%;
+    background: linear-gradient(90deg,rgba(224, 51, 43, 1) 0%, rgba(248, 62, 49, 1) 100%);
 }
 
 #lower-button {
     margin-bottom: 5%;
+    background: linear-gradient(90deg,rgba(0, 184, 190, 1) 0%, rgba(7, 193, 206, 1) 100%);
+}
+
+#higher-button:hover, #lower-button:hover {
+    filter: drop-shadow(8px 10px 6px rgba(0,0,0,0.15));
 }
 
 #higher-button:hover {
-    background-color: var(--temps-red);
-    border: 3px solid #dc3128;
-    filter: drop-shadow(10px 10px 16px rgba(0,0,0,0.5));
+    background: linear-gradient(90deg,rgba(255, 78, 61, 1) 0%, rgba(248, 62, 49, 1) 100%);
+    border: .2rem solid #dc3128;
 }
 
 #lower-button:hover {
-    background-color: var(--temps-blue);
-    border: 3px solid #00b8be;
-    filter: drop-shadow(10px 10px 16px rgba(0,0,0,0.5));
+    background: linear-gradient(90deg,rgba(42, 205, 218, 1) 0%, rgba(7, 193, 206, 1) 100%);
+    border: .2rem solid #00b8be;
+}
+
+#higher-button:active, #lower-button:active {
+    filter: drop-shadow(8px 10px 6px rgba(0,0,0,0));
+}
+
+.btn-icon {
+    height: 80%;
+    width: auto;
 }
 
 .time-block {
@@ -334,4 +359,5 @@ body, html {
     position: static;
     transform: none;
     margin-top: 0;
+    width: 100%;
 }

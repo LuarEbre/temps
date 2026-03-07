@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/LuarEbre/temps#readme",
   "dependencies": {
-    "papaparse": "^5.5.3"
+    "papaparse": "^5.5.3",
+    "pexels": "^1.4.0"
   }
 }
