@@ -19,6 +19,8 @@
 </div>
 
 <div class="split-container">
+    <button id="unit-button" data-unit="C"></button>
+
     <div class="split-side split-right"></div>
     <div class="split-side split-left"></div>
 
@@ -29,7 +31,7 @@
 
     <div class="copyright-left">
         <div class="image-copyright" id="copyright-left">Image: <a href="" target="_blank"></a></div>
-        <div class="image-copyright" id="accreditation-left"><i>provided by Pexels</i></div>
+        <div class="image-copyright" id="accreditation-left"></div>
     </div>
 
     <div class="center-piece">
@@ -41,17 +43,17 @@
     </div>
 
     <div class="left-half">
-        <h2 id="left-city">City 1's</h2>
+        <h2 id="left-city"></h2>
         <h3>current temperature is</h3>
-        <h1 id="left-temp">AB.CD°C</h1>
+        <h1 id="left-temp"></h1>
         <div class="time-block">
             <div class="local-time">LOCAL TIME:</div>
-            <h2 id="local-time-left">12:34 AM</h2>
+            <h2 id="local-time-left"></h2>
         </div>
     </div>
 
     <div class="right-half">
-        <h2 id="right-city">City 2's</h2>
+        <h2 id="right-city"></h2>
         <h3>current temperature is</h3>
         <button id="higher-button">
             HIGHER
@@ -61,14 +63,15 @@
             LOWER
             <img src="Images/SVGs/down.svg" class="btn-icon">
         </button>
-        <h3 id="left-city-2">than City 1's current temperature</h3>
+        <h3 id="left-city-2"></h3>
         <div class="time-block">
             <div class="local-time">LOCAL TIME:</div>
-            <h2 id="local-time-right">4:56 PM</h2>
+            <h2 id="local-time-right"></h2>
         </div>
     </div>
-
 </div>
+
+<div class="game-over"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="config.js"></script>

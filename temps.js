@@ -19,6 +19,7 @@ let cityObjects = [
 let unit = "C";
 
 function startLiveClocks() {
+
     if (clockInterval) clearInterval(clockInterval);
 
     // get both local-time blocks
@@ -56,6 +57,7 @@ function initializeButtons() {
 
     document.getElementById("higher-button").addEventListener('click', () => handleClick("higher"));
     document.getElementById("lower-button").addEventListener('click', () => handleClick("lower"));
+    document.getElementById("unit-button").addEventListener('click', () => toggleUnits());
 }
 
 function handleClick(choice) {
@@ -82,6 +84,15 @@ function handleClick(choice) {
     else {
         // TODO: add a "loss" screen which displays the user's final score
     }
+}
+
+function toggleUnits() {
+    if(unit=="C") unit = "F";
+    else if(unit=="F") unit = "C";
+    
+    applyTemperature();
+
+    document.getElementById("unit-button").setAttribute('data-unit', unit);
 }
 
 function initializeCopyright() {
@@ -135,6 +146,25 @@ function initializeParser() {
     });
 }
 
+function initializeHoverEffects() {
+    const buttons = document.querySelectorAll('#higher-button, #lower-button, #unit-button');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const xPercent = Math.round((x / rect.width) * 100);
+            const yPercent = Math.round((y / rect.height) * 100);
+            
+            btn.style.setProperty('--mouse-x', `${xPercent}%`);
+            btn.style.setProperty('--mouse-y', `${yPercent}%`);
+        });
+    });
+}
+
 function init() {
 
     startLiveClocks();
@@ -142,6 +172,7 @@ function init() {
     initializeCopyright();
     initializeEventListeners();
     initializeButtons();
+    initializeHoverEffects();
     fadeIn();
 }
 
