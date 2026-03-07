@@ -2,6 +2,10 @@ let allCities = [];
 let cumulativeWeights = [];
 let totalWeight = 0;
 
+let clockInterval = null;
+
+let score = 0;
+
 let cityObjects = [
     // left city
     { city: null, image: null, weather: null },
@@ -14,13 +18,81 @@ let cityObjects = [
 // game starts in Celsius, with later additions adding a unit switching button
 let unit = "C";
 
+function startLiveClocks() {
+    if (clockInterval) clearInterval(clockInterval);
+
+    // get both local-time blocks
+    const leftTime = document.getElementById("local-time-left");
+    const rightTime = document.getElementById("local-time-right");
+
+    // run loop every 1000ms
+    clockInterval = setInterval(() => {
+        // current UTC time
+        const now = Date.now();
+
+        if (cityObjects[0].weather) {
+            const localMs1 = now + (cityObjects[0].weather.timezone * 1000);
+            leftTime.innerHTML = new Date(localMs1).toLocaleTimeString('en-US', { 
+                timeZone: 'UTC', 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        if (cityObjects[1].weather) {
+            const localMs2 = now + (cityObjects[1].weather.timezone * 1000);
+            rightTime.innerHTML = new Date(localMs2).toLocaleTimeString('en-US', { 
+                timeZone: 'UTC', 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+    }, 1000);
+}
+
+function initializeButtons() {
+
+    document.getElementById("higher-button").addEventListener('click', () => handleClick("higher"));
+    document.getElementById("lower-button").addEventListener('click', () => handleClick("lower"));
+}
+
+function handleClick(choice) {
+
+    // if a city object hasn't been loaded, do nothing
+    if(!cityObjects[0] || !cityObjects[1]) {
+        return;
+    }
+
+    // higher = true if right city's temperature is higher
+    const isHigher = (cityObjects[0].weather.temperature <= cityObjects[1].weather.temperature);
+
+    // user has correctly identified the right city to have a higher temperature
+    if(isHigher&&(choice=="higher")) {
+        score++;
+        cycleCities();
+    }
+    // user has correctly identified the right city to have a lower temperature
+    else if(!isHigher&&(choice=="lower")) {
+        score++;
+        cycleCities();
+    }
+    // user is incorrect
+    else {
+        // TODO: add a "loss" screen which displays the user's final score
+    }
+}
+
 function initializeCopyright() {
+
     const copyrightDiv = document.getElementById('copyright-text');
     const currentYear = new Date().getFullYear();
     copyrightDiv.textContent = `© ${currentYear} temps`;
 }
 
 function initializeEventListeners() {
+
     const landingPage = document.querySelector('.landing');
     landingPage.addEventListener('click', () => {
     landingPage.classList.add('fade-out');
@@ -28,6 +100,7 @@ function initializeEventListeners() {
 }
 
 function fadeIn() {
+
     const landingText = document.querySelector('.landing-popup');
     const landingLogo = document.querySelector('.landing-logo');
     setTimeout(() => {
@@ -63,9 +136,12 @@ function initializeParser() {
 }
 
 function init() {
+
+    startLiveClocks();
     initializeParser();
     initializeCopyright();
     initializeEventListeners();
+    initializeButtons();
     fadeIn();
 }
 
@@ -144,18 +220,11 @@ async function getWeatherInCity(city) {
         if (data.main) {
 
             const temperature = data.main.temp;
-            const localTimeMs = (data.dt + data.timezone) * 1000;
-
-            const dateObj = new Date(localTimeMs);
-            const formattedTime = dateObj.toLocaleTimeString('en-US', { 
-                timeZone: 'UTC', 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
+            const timezone = data.timezone;
 
             return {
                 temperature: temperature,
-                localTime: formattedTime
+                timezone: timezone
             };
 
         } else {
@@ -194,7 +263,6 @@ async function drawTwoRandomCities() {
     // disable buttons while waiting for cities & data to load
     document.getElementById("higher-button").disabled = true;
     document.getElementById("lower-button").disabled = true;
-
 
     cityObjects[0].city = getWeightedRandomCity();
     cityObjects[1].city = getWeightedRandomCity();
@@ -246,11 +314,16 @@ async function cycleCities() {
     cityObjects[1].image = cityObjects[2].image;
     cityObjects[0].weather = cityObjects[1].weather;
     cityObjects[1].weather = cityObjects[2].weather;
-    applyStyles();
 
-    // only re-enable after all data has been cycled (ignoring fetching new cached city)
-    document.getElementById("higher-button").disabled = false;
-    document.getElementById("lower-button").disabled = false;
+    if (!document.startViewTransition) {
+        // Fallback: Just snap instantly like normal for older browsers
+        applyStyles(); 
+    } else {
+        // 2. The Magic: The browser handles the crossfade automatically!
+        document.startViewTransition(() => {
+            applyStyles();
+        });
+    }
 
     // get new cached city + image after cycling
     cityObjects[2].city = getWeightedRandomCity();
@@ -261,6 +334,10 @@ async function cycleCities() {
     }
     cityObjects[2].image = await fetchCityImage(cityObjects[2].city);
     cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
+
+    // only re-enable after data has been cycled and loaded
+    document.getElementById("higher-button").disabled = false;
+    document.getElementById("lower-button").disabled = false;
 }
 
 function formatTemperature(celsiusTemp) {
@@ -275,6 +352,7 @@ function swapUnits() {
     // TODO add button + change button's appearance based on current unit
     if(unit=="C") unit="F";
     else unit="C";
+    // re-render the temperature with the other unit
     applyTemperature();
 }
 
@@ -288,6 +366,7 @@ function applyTemperature() {
         leftTemperature.innerHTML = `--.--°${unit}`;
     }
 }
+
 function applyStyles() {
 
     // change UI strings to match cities
@@ -299,8 +378,6 @@ function applyStyles() {
     const leftCopyright = document.querySelector("#copyright-left a");
     const rightSide = document.querySelector('.split-right');
     const rightCopyright = document.querySelector("#copyright-right a");
-    const leftTime = document.getElementById("local-time-left");
-    const rightTime = document.getElementById("local-time-right");
 
     // change background images to match cities
     // change photography accredation to match image
@@ -328,18 +405,7 @@ function applyStyles() {
         document.getElementById("accreditation-right").innerHTML = "";
     }
 
-    // update left side's temperature string as well as both local times
-    if (cityObjects[0].weather) {
-        leftTime.innerHTML = cityObjects[0].weather.localTime;
-    } else {
-        leftTime.innerHTML = "--:-- XX"
-    }
-
-    if(cityObjects[1].weather) {
-        rightTime.innerHTML = cityObjects[1].weather.localTime;
-    } else {
-        rightTime.innerHTML = "--:-- XX"
-    }
+    applyTemperature()
 }
 
 init();

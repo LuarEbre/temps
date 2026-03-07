@@ -176,13 +176,17 @@ body, html {
 }
 
 .split-right {
-    background-image: url('Images/Placeholder/kyrgyzstan.png');
+    background-image: url('https://placehold.co/1920x1080?text=?');
     background-position: right center;
+
+    transition: all 3s ease-in-out;
 }
 
 .split-left {
-    background-image: url('Images/Placeholder/frankfurt.png');
+    background-image: url('https://placehold.co/1920x1080?text=?');
     background-position: left center;
+
+    transition: all 3s ease-in-out;
     
     clip-path: polygon(
         0 0, 
