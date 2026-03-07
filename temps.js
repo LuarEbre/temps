@@ -189,8 +189,13 @@ function getWeightedRandomCity() {
 }
 
 // only used once for the intial drawing of 2 cities
-async function drawTwoRandomCities() 
-{
+async function drawTwoRandomCities() {
+
+    // disable buttons while waiting for cities & data to load
+    document.getElementById("higher-button").disabled = true;
+    document.getElementById("lower-button").disabled = true;
+
+
     cityObjects[0].city = getWeightedRandomCity();
     cityObjects[1].city = getWeightedRandomCity();
     // already fetch the next cities image to decrease loading time
@@ -218,12 +223,22 @@ async function drawTwoRandomCities()
     // apply styles once both images & weather are loaded
     applyStyles();
 
+    // only re-enable after all (important) data has been loaded (ignoring cached city)
+    document.getElementById("higher-button").disabled = false;
+    document.getElementById("lower-button").disabled = false;
+
     console.log(`Fetching image for ${cityObjects[2].city.city_ascii}...`);
     cityObjects[2].image = await fetchCityImage(cityObjects[2].city);
     cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
+
+    
 }
 
 async function cycleCities() {
+
+    // disable buttons while waiting for cities & data to load
+    document.getElementById("higher-button").disabled = true;
+    document.getElementById("lower-button").disabled = true;
 
     cityObjects[0].city = cityObjects[1].city;
     cityObjects[1].city = cityObjects[2].city;
@@ -232,6 +247,10 @@ async function cycleCities() {
     cityObjects[0].weather = cityObjects[1].weather;
     cityObjects[1].weather = cityObjects[2].weather;
     applyStyles();
+
+    // only re-enable after all data has been cycled (ignoring fetching new cached city)
+    document.getElementById("higher-button").disabled = false;
+    document.getElementById("lower-button").disabled = false;
 
     // get new cached city + image after cycling
     cityObjects[2].city = getWeightedRandomCity();

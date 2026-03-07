@@ -207,12 +207,12 @@ body, html {
 
 .copyright-right {
     right: 0%;
-    top: 10%;
+    top: 5%;
 }
 
 .copyright-left {
     left: 0%;
-    bottom: 10%;
+    bottom: 5%;
 }
 
 .image-copyright {
@@ -318,22 +318,37 @@ body, html {
     background: linear-gradient(90deg,rgba(0, 184, 190, 1) 0%, rgba(7, 193, 206, 1) 100%);
 }
 
-#higher-button:hover, #lower-button:hover {
+#higher-button:hover:not([disabled]), #lower-button:hover:not([disabled]) {
     filter: drop-shadow(8px 10px 6px rgba(0,0,0,0.15));
 }
 
-#higher-button:hover {
+#higher-button:hover:not([disabled]) {
     background: linear-gradient(90deg,rgba(255, 78, 61, 1) 0%, rgba(248, 62, 49, 1) 100%);
     border: .2rem solid #dc3128;
 }
 
-#lower-button:hover {
+#lower-button:hover:not([disabled]) {
     background: linear-gradient(90deg,rgba(42, 205, 218, 1) 0%, rgba(7, 193, 206, 1) 100%);
     border: .2rem solid #00b8be;
 }
 
-#higher-button:active, #lower-button:active {
+#higher-button:active:not([disabled]), #lower-button:active:not([disabled]) {
+    cursor: pointer;
     filter: drop-shadow(8px 10px 6px rgba(0,0,0,0));
+    transform: translateX(-50%) scale(.98);
+}
+
+#higher-button:disabled, #lower-button:disabled {
+    filter: saturate(50%) opacity(65%);
+    cursor: not-allowed;
+}
+
+#higher-button:active:not([disabled]) {
+    background: linear-gradient(90deg,rgba(224, 51, 43, 1) 0%, rgba(248, 62, 49, 1) 100%);
+}
+
+#lower-button:active:not([disabled]) {
+    background: linear-gradient(90deg,rgba(0, 184, 190, 1) 0%, rgba(7, 193, 206, 1) 100%);
 }
 
 .btn-icon {
