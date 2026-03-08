@@ -8,11 +8,11 @@ let score = 0;
 
 let cityObjects = [
     // left city
-    { city: null, image: null, weather: null },
+    { city: null, images: null, weather: null },
     // right city
-    { city: null, image: null, weather: null },
+    { city: null, images: null, weather: null },
     // cached city
-    { city: null, image: null, weather: null }
+    { city: null, images: null, weather: null }
 ];
 
 /** @type {"C" | "F"} */
@@ -216,18 +216,20 @@ function init() {
 async function fetchCityImage(city) {
 
     const pexelsApiKey = PEXELS_KEY;
+    let isObscure = false;
     
     let searchQuery = null;
 
-    // only search for images corresponding to country if city is obscure
-    if(city.population<10000) {
-        searchQuery = `${city.country} sights landscape`;
+    // only search for images corresponding to city's country if the city is "obscure"
+    if(city.population<100000) {
+        isObscure = true;
+        searchQuery = `${city.country}`;
     } else {
-        searchQuery = `${city.city_ascii}, ${city.country} sights landscape`;
+        searchQuery = `${city.city_ascii}, ${city.country}`;
     }
     
     // build search URL with encodeURICOmponent
-    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=1`;
+    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=40&orientation=landscape`;
 
     try {
         const response = await fetch(url, {
@@ -244,16 +246,23 @@ async function fetchCityImage(city) {
         
         // check if an image is found
         if (data.photos && data.photos.length > 0) {
+            
+            // build array of image objects with url, photographer, and photographerLink strings
+            const imageArray = data.photos.map(photo => {
+                return {
+                    url: photo.src.large2x,
+                    photographer: photo.photographer,
+                    photographerLink: photo.photographer_url
+                };
+            });
 
-            const imageUrl = data.photos[0].src.landscape; 
-            const photographer = data.photos[0].photographer;
-            const photographerURL = data.photos[0].photographer_url;
-
-            return {
-                url: imageUrl,
-                photographer: photographer,
-                photographerLink: photographerURL
-            };
+            if (isObscure) {
+                const randomIndex = Math.floor(Math.random() * imageArray.length);
+                // return an array of only the randomly selected image
+                return [imageArray[randomIndex]];
+            } else {
+                return imageArray;
+            }
 
         } else {
             // should not happen
@@ -348,11 +357,11 @@ async function drawTwoRandomCities() {
     applyStyles();
 
     console.log(`Fetching image for ${cityObjects[0].city.city_ascii}...`);
-    cityObjects[0].image = await fetchCityImage(cityObjects[0].city);
+    cityObjects[0].images = await fetchCityImage(cityObjects[0].city);
     cityObjects[0].weather = await getWeatherInCity(cityObjects[0].city);
     
     console.log(`Fetching image for ${cityObjects[1].city.city_ascii}...`);
-    cityObjects[1].image = await fetchCityImage(cityObjects[1].city);
+    cityObjects[1].images = await fetchCityImage(cityObjects[1].city);
     cityObjects[1].weather = await getWeatherInCity(cityObjects[1].city);
 
     // apply styles once both images & weather are loaded
@@ -363,7 +372,7 @@ async function drawTwoRandomCities() {
     document.getElementById("lower-button").disabled = false;
 
     console.log(`Fetching image for ${cityObjects[2].city.city_ascii}...`);
-    cityObjects[2].image = await fetchCityImage(cityObjects[2].city);
+    cityObjects[2].images = await fetchCityImage(cityObjects[2].city);
     cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
 
     
@@ -377,8 +386,8 @@ async function cycleCities() {
 
     cityObjects[0].city = cityObjects[1].city;
     cityObjects[1].city = cityObjects[2].city;
-    cityObjects[0].image = cityObjects[1].image;
-    cityObjects[1].image = cityObjects[2].image;
+    cityObjects[0].images = cityObjects[1].images;
+    cityObjects[1].images = cityObjects[2].images;
     cityObjects[0].weather = cityObjects[1].weather;
     cityObjects[1].weather = cityObjects[2].weather;
 
@@ -399,7 +408,7 @@ async function cycleCities() {
     while (cityObjects[2].city.id === cityObjects[0].city.id || cityObjects[2].city.id === cityObjects[1].city.id) {
         cityObjects[2].city = getWeightedRandomCity();
     }
-    cityObjects[2].image = await fetchCityImage(cityObjects[2].city);
+    cityObjects[2].images = await fetchCityImage(cityObjects[2].city);
     cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
 
     // only re-enable after data has been cycled and loaded
@@ -449,10 +458,10 @@ function applyStyles() {
 
     // change background images to match cities
     // change photography accredation to match image
-    if (cityObjects[0].image) {
-        leftSide.style.backgroundImage = `url('${cityObjects[0].image.url}')`;
-        leftCopyright.href = cityObjects[0].image.photographerLink;
-        leftCopyright.innerText = cityObjects[0].image.photographer;
+    if (cityObjects[0].images && cityObjects[0].images.length > 0) {
+        leftSide.style.backgroundImage = `url('${cityObjects[0].images[0].url}')`;
+        leftCopyright.href = cityObjects[0].images[0].photographerLink;
+        leftCopyright.innerText = cityObjects[0].images[0].photographer;
         document.getElementById("accreditation-left").innerHTML = "<i>provided by Pexels</i>"
     } else {
         leftSide.style.backgroundImage = `url(https://placehold.co/1920x1080?text=?)`;
@@ -461,10 +470,10 @@ function applyStyles() {
         document.getElementById("accreditation-left").innerHTML = ""
     }
 
-    if (cityObjects[1].image) {
-        rightSide.style.backgroundImage = `url('${cityObjects[1].image.url}')`;
-        rightCopyright.href = cityObjects[1].image.photographerLink;
-        rightCopyright.innerText = cityObjects[1].image.photographer;
+    if (cityObjects[1].images && cityObjects[1].images.length > 0) {
+        rightSide.style.backgroundImage = `url('${cityObjects[1].images[0].url}')`;
+        rightCopyright.href = cityObjects[1].images[0].photographerLink;
+        rightCopyright.innerText = cityObjects[1].images[0].photographer;
         document.getElementById("accreditation-right").innerHTML = "<i>provided by Pexels</i>"
     } else {
         rightSide.style.backgroundImage = `url(https://placehold.co/1920x1080?text=?)`;
