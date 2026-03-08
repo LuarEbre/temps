@@ -61,8 +61,91 @@ body, html {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.information {
+    position: absolute;
+    width: 3vmin;
+    height: 3vmin;
+    left: 2vmin;
+    top: 2vmin;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: transparent;
+    border: 0.2rem solid var(--temps-mint);
+    margin: 0;
+    border-radius: 100rem;
+    color: var(--temps-mint);
     
-    z-index: 100;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    font-style: italic;
+
+    font-size: 2vmin; 
+    
+    cursor: pointer;
+
+    transition: all 0.175s ease-in-out;
+}
+
+.information:hover {
+    transform: scale(1.1);
+    border: 0.3rem solid var(--temps-mint);
+    margin: -0.15rem;
+}
+
+.info-tooltip::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+}
+
+.info-tooltip {
+    position: absolute;
+    top: 130%;
+    left: 0;
+    width: max-content;
+    
+    background-color: rgba(21, 21, 21, 0.5);
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--temps-mint);
+    
+    color: var(--temps-mint);
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1.5;
+    text-align: left;
+    
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(-5px);
+}
+
+.information:hover .info-tooltip {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.info-tooltip a {
+    color: var(--temps-mint);
+    text-decoration: underline;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+}
+
+.info-tooltip a:hover {
+    filter: drop-shadow(0px 0px 4px #d3fbee90);
 }
 
 .copyright-text {
@@ -116,10 +199,9 @@ body, html {
     padding: 10px 20px;
     min-width: 60px;
     
-    /* gradient for transition purposes */
-    background: radial-gradient(circle at 50% 50%, #b5b5b5 0%, #b5b5b5 100%);
-    filter: drop-shadow(0px 0px 4px rgba(45,45,45,0.25));
-    color: #2d2d2d;
+    background: linear-gradient(90deg,rgba(200, 235, 225, 1) 0%, rgba(211, 251, 238, .95) 50%, rgba(200, 235, 225, 1) 100%);
+    filter: drop-shadow(0px 0px 4px rgba(51,76,67,0.2));
+    color: #334C43;
     border: 0 solid transparent;
     border-radius: 100px;
     font-size: 1.2rem;
@@ -134,9 +216,9 @@ body, html {
 }
 
 #unit-button:hover {
-    background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(197, 197, 197, 1) 0%, rgba(45, 45, 45, 1) 200%);
+    background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(211, 251, 238, 1) 0%, rgba(51,76,67,.75) 400%);
     transform: translateX(-50%) scale(1.05);
-    filter: drop-shadow(0px 0px 16px rgba(45,45,45,0.4));
+    filter: drop-shadow(0px 0px 16px rgba(51,76,67,0.35));
     cursor: pointer;
 }
 
@@ -173,17 +255,19 @@ body, html {
     left: 50%;
 }
 
+.strip-base, .circle-base {
+    background-color: #334C43;
+}
+
 .strip-base {
     width: calc(20px + 0.8rem);
     height: 150vh;
-    background-color: #000;
     transform: translate(-50%, -50%) rotate(17deg); 
 }
 
 .circle-base {
     width: calc(18vmin + 0.8rem);
     height: calc(18vmin + 0.8rem);
-    background-color: #000000;
     border-radius: 50%;
     transform: translate(-50%, -50%);
 }
@@ -191,14 +275,14 @@ body, html {
 .strip-fill {
     width: 20px;
     height: 150vh;
-    background-color: #f1f1f1;
+    background-color: #D3FBEE;
     transform: translate(-50%, -50%) rotate(17deg);
 }
 
 .circle-fill {
     width: 18vmin;
     height: 18vmin;
-    background-color: #f1f1f1;
+    background-color: #D3FBEE;
     border-radius: 50%;
     transform: translate(-50%, -50%);
 }
@@ -210,7 +294,7 @@ body, html {
     font-weight: bold;
     font-size: 8vmin;
 
-    color: #0d0d0d;
+    color: #334C43;
     transform: translate(-50%, -58%);
 
     pointer-events: none;
@@ -292,6 +376,22 @@ body, html {
 
     font-family: Helvetica, Arial, sans-serif;
     font-weight: bold;
+}
+
+#score {
+    position: fixed;
+    left: 3vmin;
+    top: 3vmin;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 0.5rem;
+}
+
+#score h3, #score h4 {
+    margin: 0;
+    line-height: 1;
 }
 
 .right-half {
@@ -441,3 +541,122 @@ body, html {
     margin-top: 0;
     width: 100%;
 }
+
+.game-over {
+
+    --transition-length: 300ms;
+
+    opacity: 0%;
+    pointer-events: none;
+
+    position: absolute;
+    left: 0%;
+    top: 0%;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: var(--temps-blue);
+    color: var(--temps-mint);
+
+    z-index: 100;
+
+    text-shadow: 0px 0px 16px rgba(0,0,0,0.3);
+
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+
+    transition: opacity var(--transition-length) ease-in;
+}   
+
+/* used to show GAME OVER screen temporarily*/
+.game-over.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.game-over-logo {
+    position: relative;
+    top: 12.5%;
+    left: 50%;
+
+    width: 10%;
+    height: auto;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 110;
+
+    filter: drop-shadow(0px 0px 16px rgba(0,0,0,0.3))
+}
+
+.game-over h1 {
+    position: relative;
+    left: 50%;
+
+    margin-top: 12.5%;
+    transform: translateX(-50%); 
+    
+    text-align: center;
+    width: 100%;
+
+    font-size: clamp(3rem, 5vw, 8rem);
+}
+
+.game-over h2 {
+    position: relative;
+    left: 50%;
+
+    transform: translateX(-50%); 
+    
+    text-align: center; 
+    text-wrap: balance;
+    width: 80%;
+
+    font-size: clamp(2rem, 3.5vw, 4rem);
+}
+
+#play-again-button {
+
+    position: relative;
+    left: 50%;
+    margin-top: 10%;
+    width: 20%;
+    height: 7%;
+
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+    
+    border: 0px solid transparent;
+    background: linear-gradient(90deg,rgba(200, 235, 225, 1) 0%, rgba(211, 251, 238, .9) 50%, rgba(200, 235, 225, 1) 100%);
+
+    color: #334C43;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 3vmin;
+
+    border-radius: 1vmin;
+    transform: translate(-50%, -50%);
+
+    filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15));
+    text-shadow: 2px 2px 16px rgba(51,76,67,0.3);
+
+    transition: all 0.2s ease-in-out;
+}
+
+#play-again-button:hover {
+    background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(211, 251, 238, 1) 0%, rgba(51,76,67,.25) 400%);
+    cursor: pointer;
+
+    transform: translate(-50%, -50%) scale(1.02);
+}
+
+#play-again-button:active {
+    filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15));
+
+    transform: translate(-50%, -50%) scale(0.75);
+}
+
+#game-over-copyright-text {
+    text-shadow: 0px 0px 16px rgba(0,0,0,0.3);
+}
+

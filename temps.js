@@ -15,7 +15,7 @@ let cityObjects = [
     { city: null, image: null, weather: null }
 ];
 
-// game starts in Celsius, with later additions adding a unit switching button
+/** @type {"C" | "F"} */
 let unit = "C";
 
 function startLiveClocks() {
@@ -58,6 +58,7 @@ function initializeButtons() {
     document.getElementById("higher-button").addEventListener('click', () => handleClick("higher"));
     document.getElementById("lower-button").addEventListener('click', () => handleClick("lower"));
     document.getElementById("unit-button").addEventListener('click', () => toggleUnits());
+    document.getElementById("play-again-button").addEventListener('click', () => playAgain());
 }
 
 function handleClick(choice) {
@@ -74,39 +75,74 @@ function handleClick(choice) {
     if(isHigher&&(choice=="higher")) {
         score++;
         cycleCities();
+        //TODO: add red flash on the screen, signifying HIGHER to be correct
     }
     // user has correctly identified the right city to have a lower temperature
     else if(!isHigher&&(choice=="lower")) {
         score++;
         cycleCities();
+        //TODO: add blue flash on the screen, signifying HIGHER to be correct
     }
     // user is incorrect
     else {
-        // TODO: add a "loss" screen which displays the user's final score
+
+        // display user's score
+        const scoreDisplay = document.getElementById("final-score");
+        scoreDisplay.innerHTML = score;
+
+        // fade in GAME OVER screen
+        const gameOverScreen = document.querySelector(".game-over");
+        gameOverScreen.classList.add("visible");
+
+        // get transition length
+        const rawTime = getComputedStyle(gameOverScreen).getPropertyValue('--transition-length');
+
+        // parse string to remove "ms"
+        const delayInMs = parseFloat(rawTime); 
+
+        // --transition-length long timeout to avoid next round rendering before the GAME OVER screen is visible
+        setTimeout(() => {
+            drawTwoRandomCities();
+        }, delayInMs);
     }
 }
 
 function toggleUnits() {
+
     if(unit=="C") unit = "F";
     else if(unit=="F") unit = "C";
-    
+
     applyTemperature();
 
     document.getElementById("unit-button").setAttribute('data-unit', unit);
 }
 
+function playAgain() {
+
+    score = 0;
+    document.getElementById("current-score").innerHTML = score;
+    document.querySelector(".game-over").classList.remove("visible");
+}
+
 function initializeCopyright() {
 
     const copyrightDiv = document.getElementById('copyright-text');
+    const copyrightDiv2 = document.getElementById('game-over-copyright-text');
     const currentYear = new Date().getFullYear();
     copyrightDiv.textContent = `© ${currentYear} temps`;
+    copyrightDiv2.textContent = `© ${currentYear} temps`;
 }
 
 function initializeEventListeners() {
 
+    const infoBox = document.querySelector('.information');
+    infoBox.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+
     const landingPage = document.querySelector('.landing');
     landingPage.addEventListener('click', () => {
-    landingPage.classList.add('fade-out');
+        landingPage.classList.add('fade-out');
     });
 }
 
@@ -147,7 +183,7 @@ function initializeParser() {
 }
 
 function initializeHoverEffects() {
-    const buttons = document.querySelectorAll('#higher-button, #lower-button, #unit-button');
+    const buttons = document.querySelectorAll('#higher-button, #lower-button, #unit-button, #play-again-button');
 
     buttons.forEach(btn => {
         btn.addEventListener('mousemove', (e) => {
@@ -400,6 +436,7 @@ function applyTemperature() {
 
 function applyStyles() {
 
+    document.getElementById("current-score").innerHTML = score;
     // change UI strings to match cities
     document.getElementById("left-city").innerHTML = `${cityObjects[0].city.city_ascii}, ${cityObjects[0].city.country}'s`;
     document.getElementById("right-city").innerHTML = `${cityObjects[1].city.city_ascii}, ${cityObjects[1].city.country}'s`;
