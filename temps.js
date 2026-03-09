@@ -416,6 +416,33 @@ async function cycleCities() {
     document.getElementById("lower-button").disabled = false;
 }
 
+function formatEmoji(city) {
+
+    const flagOverrides = {
+        "QZ": "GB",
+        "XD": "GB",
+        "XG": "PS",
+        "XW": "PS",
+        "XR": "SJ",
+        "XP": "CN"
+    };
+
+    // if no city / ISO2 column empty, return placeholder white flag
+    if (!city || !city.iso2) {
+        return "🏳️";
+    }
+
+    let iso2 = flagOverrides[city.iso2] || city.iso2;
+    iso2 = iso2.toUpperCase();
+
+    const UNICODE_OFFSET = 127397;
+
+    return String.fromCodePoint(
+        iso2.charCodeAt(0) + UNICODE_OFFSET,
+        iso2.charCodeAt(1) + UNICODE_OFFSET
+    );
+}
+
 function formatTemperature(celsiusTemp) {
     if (unit === "C") {
         return celsiusTemp.toFixed(2);
@@ -446,6 +473,7 @@ function applyTemperature() {
 function applyStyles() {
 
     document.getElementById("current-score").innerHTML = score;
+    
     // change UI strings to match cities
     document.getElementById("left-city").innerHTML = `${cityObjects[0].city.city_ascii}, ${cityObjects[0].city.country}'s`;
     document.getElementById("right-city").innerHTML = `${cityObjects[1].city.city_ascii}, ${cityObjects[1].city.country}'s`;
@@ -482,7 +510,10 @@ function applyStyles() {
         document.getElementById("accreditation-right").innerHTML = "";
     }
 
-    applyTemperature()
+    applyTemperature();
+
+    document.getElementById("left-emoji").innerHTML = formatEmoji(cityObjects[0].city);
+    document.getElementById("right-emoji").innerHTML = formatEmoji(cityObjects[1].city);
 }
 
 init();
