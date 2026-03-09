@@ -227,7 +227,7 @@ async function fetchCityImage(city) {
     }
     
     // API call wrapped by /.netlify/functions
-    const url = `/.netlify/functions/getPexels?query=${encodeURIComponent(searchQuery)}`;
+    const url = `/.netlify/functions/pexels?query=${encodeURIComponent(searchQuery)}`;
 
     try {
         const response = await fetch(url);
