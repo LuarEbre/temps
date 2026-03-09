@@ -229,7 +229,7 @@ async function fetchCityImage(city) {
     }
     
     // build search URL with encodeURICOmponent
-    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=40&orientation=landscape`;
+    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=40&orientation=landscape&people_count=0`;
 
     try {
         const response = await fetch(url, {
