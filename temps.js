@@ -215,9 +215,7 @@ function init() {
 // PEXELS API CALL
 async function fetchCityImage(city) {
 
-    const pexelsApiKey = PEXELS_KEY;
     let isObscure = false;
-    
     let searchQuery = null;
 
     // only search for images corresponding to city's country if the city is "obscure"
@@ -228,15 +226,11 @@ async function fetchCityImage(city) {
         searchQuery = `${city.city_ascii}, ${city.country}`;
     }
     
-    // build search URL with encodeURICOmponent
-    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=40&orientation=landscape&people_count=0`;
+    // API call wrapped by /.netlify/functions
+    const url = `/.netlify/functions/getPexels?query=${encodeURIComponent(searchQuery)}`;
 
     try {
-        const response = await fetch(url, {
-            headers: {
-                Authorization: pexelsApiKey
-            }
-        });
+        const response = await fetch(url);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -279,10 +273,8 @@ async function fetchCityImage(city) {
 // OPENWEATHER API CALL
 async function getWeatherInCity(city) {
 
-    const apiKey = OPEN_WEATHER_KEY;
-
-    // build search URL
-    const url = `https://pro.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lng}&appid=${apiKey}&units=metric`;
+    // API call wrapped by /.netlify/functions
+    const url = `/.netlify/functions/openWeather?lat=${city.lat}&lon=${city.lng}`;
 
     try {
         const response = await fetch(url);
