@@ -20,9 +20,9 @@
         Weather data provided by <a href="https://openweathermap.org/" target="_blank">OpenWeather API</a>
         </div>
     </div>
-    <div class="copyright-text" id="copyright-text"></div>
-    <div class="landing-logo"></div>
     <div class="landing-popup">Click anywhere to begin!</div>
+    <div class="landing-logo"></div>
+    <div class="copyright-text" id="copyright-text"></div>
 </div>
 
 <div class="split-container">
@@ -63,9 +63,16 @@
         <h2 id="left-city"></h2>
         <h3>current temperature is</h3>
         <h1 id="left-temp"></h1>
-        <div class="time-block">
-            <div class="local-time">LOCAL TIME:</div>
-            <h2 id="local-time-left"></h2>
+        <div class="meta-block">
+            <div class="meta-column">
+                <div class="metadata">ELEVATION:</div>
+                <h2 id="elevation-left">999m</h2>
+            </div>
+
+            <div class="meta-column">
+                <div class="metadata">LOCAL TIME:</div>
+                <h2 id="local-time-left"></h2>
+            </div>
         </div>
     </div>
 
@@ -79,16 +86,23 @@
         <h3>current temperature is</h3>
         <button id="higher-button">
             HIGHER
-            <img src="Images/SVGs/up.svg" class="btn-icon">
+            <img src="Images/SVGs/up.svg" class="button-icon">
         </button><br>
         <button id="lower-button">
             LOWER
-            <img src="Images/SVGs/down.svg" class="btn-icon">
+            <img src="Images/SVGs/down.svg" class="button-icon">
         </button>
         <h3 id="left-city-2"></h3>
-        <div class="time-block">
-            <div class="local-time">LOCAL TIME:</div>
-            <h2 id="local-time-right"></h2>
+        <div class="meta-block">
+            <div class="meta-column">
+                <div class="metadata">ELEVATION:</div>
+                <h2 id="elevation-right">1000m</h2>
+            </div>
+
+            <div class="meta-column">
+                <div class="metadata">LOCAL TIME:</div>
+                <h2 id="local-time-right"></h2>
+            </div>
         </div>
     </div>
 </div>
@@ -96,7 +110,7 @@
 <div class="game-over">
     <img src="Images/Logo/temps.png" class="game-over-logo">
     <h1>GAME OVER!</h1>
-    <h2>Final Score: <span id="final-score">0</span></h2>
+    <h2>Final Score<br><span id="final-score">0</span></h2>
     <button id="play-again-button">Play Again?</button>
     <div class="copyright-text" id="game-over-copyright-text"></div>
 </div>

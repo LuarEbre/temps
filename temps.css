@@ -159,7 +159,7 @@ body, html {
     font-family: Helvetica, Arial, sans-serif;
     text-align: center;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 1.5vmin;
 }
 
 .landing-popup {
@@ -184,7 +184,16 @@ body, html {
     transition: opacity 0.5s ease-in;
 }
 
-#unit-button {
+#unit-buttons {
+
+    position: relative;
+
+    top: 1.75vmin;
+    display: grid;
+    gap: 1.75vmin;
+}
+
+.unit-button {
 
     --mouse-x: 50%;
     --mouse-y: 50%;
@@ -193,18 +202,19 @@ body, html {
 
     top: 2%;
     left: 50%;
-    transform: translateX(-50%);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     z-index: 50;
-    
-    padding: 10px 20px;
-    min-width: 60px;
     
     background: linear-gradient(90deg,rgba(200, 235, 225, 1) 0%, rgba(211, 251, 238, .95) 50%, rgba(200, 235, 225, 1) 100%);
     filter: drop-shadow(0px 0px 4px rgba(51,76,67,0.2));
     color: #334C43;
     border: 0 solid transparent;
     border-radius: 100px;
-    font-size: 1.2rem;
+    font-size: 1.5vmin;
 
     width: 5%;
     height: 5%;
@@ -217,13 +227,13 @@ body, html {
 
 #unit-button:hover {
     background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(211, 251, 238, 1) 0%, rgba(51,76,67,.75) 400%);
-    transform: translateX(-50%) scale(1.05);
-    filter: drop-shadow(0px 0px 16px rgba(51,76,67,0.35));
+    transform: scale(1.05);
+    filter: drop-shadow(0px 0px 16px rgba(51,76,67,0.25));
     cursor: pointer;
 }
 
-#unit-button:active {
-    transform: translateX(-50%) scale(.92);
+.unit-button:active {
+    transform: scale(.92);
 }
 
 #unit-button::after {
@@ -367,7 +377,7 @@ body, html {
 
 .left-half, .right-half {
     position: absolute;
-    height: 85%;
+    height: 92.5%;
     width: 50%;
     bottom: 0;
 
@@ -394,8 +404,25 @@ body, html {
     line-height: 1;
 }
 
+#score h4 {
+    font-size: 1.75vmin;
+}
+
 .right-half {
     left: 50%;
+}
+
+.left-half h1, .right-half h1 {
+    position: relative;
+    left: 50%;
+
+    margin-top: 1vmin;
+    transform: translateX(-50%); 
+    
+    text-align: center;
+    width: 100%;
+
+    font-size: 10vmin;
 }
 
 .left-half h2, .right-half h2 {
@@ -408,33 +435,20 @@ body, html {
     text-wrap: balance;
     width: 80%;
 
-    font-size: clamp(2rem, 3.5vw, 4rem);
+    font-size: 5.25vmin;
 }
 
 .left-half h3, .right-half h3 {
     position: relative;
     left: 50%;
 
-    margin-top: -3%;
+    margin-top: -3vmin;
     transform: translateX(-50%); 
     
     text-align: center;
     width: 100%;
 
-    font-size: clamp(1rem, 3.5vw, 2.5rem);
-}
-
-.left-half h1, .right-half h1 {
-    position: relative;
-    left: 50%;
-
-    margin-top: -1%;
-    transform: translateX(-50%); 
-    
-    text-align: center;
-    width: 100%;
-
-    font-size: clamp(3rem, 5vw, 8rem);
+    font-size: 3.5vmin;
 }
 
 #higher-button, #lower-button {
@@ -459,7 +473,7 @@ body, html {
     border: .2rem solid transparent;
     border-radius: 0.4rem;
 
-    font-size: clamp(1rem, 2vw, 3.5rem);
+    font-size: 5vmin;
     text-align: left;
 
     padding-left: 2%;
@@ -515,13 +529,19 @@ body, html {
     background: linear-gradient(90deg,rgba(0, 184, 190, 1) 0%, rgba(7, 193, 206, 1) 100%);
 }
 
-.btn-icon {
+.button-icon {
     height: 80%;
     width: auto;
     filter: drop-shadow(1px 2px 8px rgba(0,0,0,0.5));
 }
 
-.time-block {
+.meta-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.meta-block {
     position: absolute;
     bottom: 0%;
     left: 50%;
@@ -530,112 +550,96 @@ body, html {
     text-align: center;
 }
 
-.local-time {
-    width: 100%;
-    font-size: clamp(1rem, 2.5vw, 2rem);
-}
-
-.time-block h2 {
+.meta-block h2 {
     position: static;
     transform: none;
     margin-top: 0;
     width: 100%;
 }
 
-.game-over {
+.metadata {
+    width: 100%;
+    font-size: 2.5vmin;
+}
 
+#local-time-left, #local-time-right, #elevation-left, #elevation-right {
+    font-size: 4vmin;
+}
+
+.game-over {
     --transition-length: 300ms;
 
-    opacity: 0%;
+    opacity: 0;
     pointer-events: none;
 
     position: absolute;
-    left: 0%;
-    top: 0%;
+    left: 0;
+    top: 0;
 
     width: 100%;
     height: 100%;
 
     background-color: var(--temps-blue);
     color: var(--temps-mint);
-
     z-index: 100;
-
-    text-shadow: 0px 0px 16px rgba(0,0,0,0.3);
+    
+    /* 1. THE FLEXBOX MAGIC */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4vmin; /* 2. This creates perfect, automatic spacing between every item */
 
     font-family: Helvetica, Arial, sans-serif;
     font-weight: bold;
+    text-shadow: 0px 0px 16px rgba(0,0,0,0.3);
 
     transition: opacity var(--transition-length) ease-in;
 }   
 
-/* used to show GAME OVER screen temporarily*/
 .game-over.visible {
     opacity: 1;
     pointer-events: auto;
 }
 
 .game-over-logo {
-    position: relative;
-    top: 12.5%;
-    left: 50%;
-
-    width: 10%;
+    width: 15vmax;
     height: auto;
 
-    transform: translate(-50%, -50%);
-
-    z-index: 110;
-
-    filter: drop-shadow(0px 0px 16px rgba(0,0,0,0.3))
+    filter: drop-shadow(0px 0px 16px rgba(0,0,0,0.3));
 }
 
 .game-over h1 {
-    position: relative;
-    left: 50%;
-
-    margin-top: 12.5%;
-    transform: translateX(-50%); 
-    
     text-align: center;
     width: 100%;
 
-    font-size: clamp(3rem, 5vw, 8rem);
+    font-size: 8vmin;
 }
 
 .game-over h2 {
-    position: relative;
-    left: 50%;
-
-    transform: translateX(-50%); 
-    
     text-align: center; 
     text-wrap: balance;
-    width: 80%;
 
-    font-size: clamp(2rem, 3.5vw, 4rem);
+    width: 80%;
+    
+    font-size: 3vmin;
+}
+
+#final-score {
+    font-size: 5.5vmin;
 }
 
 #play-again-button {
-
-    position: relative;
-    left: 50%;
-    margin-top: 10%;
     width: 20%;
     height: 7%;
 
-    --mouse-x: 50%;
-    --mouse-y: 50%;
-    
     border: 0px solid transparent;
+    border-radius: 1vmin;
     background: linear-gradient(90deg,rgba(200, 235, 225, 1) 0%, rgba(211, 251, 238, .9) 50%, rgba(200, 235, 225, 1) 100%);
 
     color: #334C43;
     font-family: Helvetica, Arial, sans-serif;
     font-size: 3vmin;
-
-    border-radius: 1vmin;
-    transform: translate(-50%, -50%);
 
     filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15));
     text-shadow: 2px 2px 16px rgba(51,76,67,0.3);
@@ -647,13 +651,13 @@ body, html {
     background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(211, 251, 238, 1) 0%, rgba(51,76,67,.25) 400%);
     cursor: pointer;
 
-    transform: translate(-50%, -50%) scale(1.02);
+    transform: scale(1.02);
 }
 
 #play-again-button:active {
     filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15));
 
-    transform: translate(-50%, -50%) scale(0.75);
+    transform: scale(0.75);
 }
 
 #game-over-copyright-text {
