@@ -17,7 +17,8 @@
         i
         <div class="info-tooltip">
         City data provided by <a href="https://simplemaps.com/data/world-cities" target="_blank">SimpleMaps</a><br>
-        Weather data provided by <a href="https://openweathermap.org/" target="_blank">OpenWeather API</a>
+        Weather data provided by <a href="https://openweathermap.org/" target="_blank">OpenWeather API</a><br>
+        Elevation data provided by <a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a>
         </div>
     </div>
     <div class="copyright-text" id="copyright-text"></div>
@@ -26,7 +27,11 @@
 </div>
 
 <div class="split-container">
-    <button id="unit-button" data-unit="C"></button>
+
+    <div id="unit-buttons">
+        <button class="unit-button" id="temperature-button" data-unit="C"></button>
+        <button class="unit-button" id="height-button" data-unit="m"></button>
+    </div>
 
     <div class="split-side split-right">
         <div id="color-popup-right" class="color-popup"></div>
@@ -68,8 +73,15 @@
         <h3>current temperature is</h3>
         <h1 id="left-temp"></h1>
         <div class="time-block">
-            <div class="local-time">LOCAL TIME:</div>
-            <h2 id="local-time-left"></h2>
+            <div class="time-column">
+                <div class="local-time">ELEVATION:</div>
+                <h2 id="elevation-left">999m</h2>
+            </div>
+
+            <div class="time-column">
+                <div class="local-time">LOCAL TIME:</div>
+                <h2 id="local-time-left"></h2>
+            </div>
         </div>
     </div>
 
@@ -91,8 +103,15 @@
         </button>
         <h3 id="left-city-2"></h3>
         <div class="time-block">
-            <div class="local-time">LOCAL TIME:</div>
-            <h2 id="local-time-right"></h2>
+            <div class="time-column">
+                <div class="local-time">ELEVATION:</div>
+                <h2 id="elevation-right">1000m</h2>
+            </div>
+
+            <div class="time-column">
+                <div class="local-time">LOCAL TIME:</div>
+                <h2 id="local-time-right"></h2>
+            </div>
         </div>
     </div>
 </div>
