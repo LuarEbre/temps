@@ -73,15 +73,17 @@ function handleClick(choice) {
 
     // user has correctly identified the right city to have a higher temperature
     if(isHigher&&(choice=="higher")) {
+
+        flashFilter("red");
         score++;
         cycleCities();
-        //TODO: add red flash on the screen, signifying HIGHER to be correct
     }
     // user has correctly identified the right city to have a lower temperature
     else if(!isHigher&&(choice=="lower")) {
+
+        flashFilter("blue");
         score++;
         cycleCities();
-        //TODO: add blue flash on the screen, signifying HIGHER to be correct
     }
     // user is incorrect
     else {
@@ -94,17 +96,38 @@ function handleClick(choice) {
         const gameOverScreen = document.querySelector(".game-over");
         gameOverScreen.classList.add("visible");
 
-        // get transition length
-        const rawTime = getComputedStyle(gameOverScreen).getPropertyValue('--transition-length');
-
-        // parse string to remove "ms"
-        const delayInMs = parseFloat(rawTime); 
+        const delayInMs = getTransitionLengthMS(gameOverScreen);
 
         // --transition-length long timeout to avoid next round rendering before the GAME OVER screen is visible
         setTimeout(() => {
             drawTwoRandomCities();
         }, delayInMs);
     }
+}
+
+function getTransitionLengthMS(element) {
+
+    const rawTime = getComputedStyle(element).getPropertyValue('--transition-length').trim();
+
+    if(rawTime != "") return parseFloat(rawTime); 
+    else return 0;
+}
+
+function flashFilter(color) {
+
+    const popUpLeft = document.getElementById("color-popup-left");
+    const popUpRight = document.getElementById("color-popup-right");
+    
+    const delayInMS = getTransitionLengthMS(popUpLeft);
+
+    if(color!="red" && color!="blue") return;
+    popUpLeft.classList.add(`${color}-filter`);
+    popUpRight.classList.add(`${color}-filter`);
+
+    setTimeout(() => {
+    popUpLeft.classList.remove(`${color}-filter`);
+    popUpRight.classList.remove(`${color}-filter`);
+    }, delayInMS);
 }
 
 function toggleUnits() {

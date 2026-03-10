@@ -295,6 +295,7 @@ body, html {
     font-size: 8vmin;
 
     color: #334C43;
+    filter: drop-shadow(0px 0px 4px rgba(51,76,67,0.25));
     transform: translate(-50%, -58%);
 
     pointer-events: none;
@@ -320,6 +321,44 @@ body, html {
 .split-right {
     background-image: url('https://placehold.co/1920x1080?text=?');
     background-position: right center;
+
+    transition: blur 2s ease-in-out
+}
+
+.color-popup {
+
+    --transition-length: 450ms;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: #00000000;
+
+    filter: blur(0px);
+
+    transition: all var(--transition-length) ease-in-out;
+}
+
+#color-popup-left {
+    clip-path: polygon(
+        0 0, 
+        calc(50% + 15.24vh) 0, 
+        calc(50% - 15.24vh) 100%, 
+        0 100%
+    );
+}
+
+.color-popup.red-filter, .color-popup.blue-filter {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.color-popup.red-filter {
+    background-color: #f83e3150;
+}
+
+.color-popup.blue-filter {
+    background-color: #07c1ce50;
 }
 
 .split-left {

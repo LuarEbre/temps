@@ -88,3 +88,7 @@ node_modules/whatwg-url/lib/utils.js
 node_modules/.package-lock.json
 config.js
 .gitignore
+node_modules
+node_modules/.package-lock.json
+deno.lock
+.netlify/state.json
