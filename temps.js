@@ -16,7 +16,10 @@ let cityObjects = [
 ];
 
 /** @type {"C" | "F"} */
-let unit = "C";
+let temperatureUnit = "C";
+
+/** @type {"m" | "ft"} */
+let heightUnit = "m";
 
 function startLiveClocks() {
 
@@ -57,7 +60,8 @@ function initializeButtons() {
 
     document.getElementById("higher-button").addEventListener('click', () => handleClick("higher"));
     document.getElementById("lower-button").addEventListener('click', () => handleClick("lower"));
-    document.getElementById("unit-button").addEventListener('click', () => toggleUnits());
+    document.getElementById("temperature-button").addEventListener('click', () => toggleTemperatureUnits());
+    document.getElementById("height-button").addEventListener('click', () => toggleHeightUnits());
     document.getElementById("play-again-button").addEventListener('click', () => playAgain());
 }
 
@@ -73,15 +77,17 @@ function handleClick(choice) {
 
     // user has correctly identified the right city to have a higher temperature
     if(isHigher&&(choice=="higher")) {
+
+        flashFilter("red");
         score++;
         cycleCities();
-        //TODO: add red flash on the screen, signifying HIGHER to be correct
     }
     // user has correctly identified the right city to have a lower temperature
     else if(!isHigher&&(choice=="lower")) {
+
+        flashFilter("blue");
         score++;
         cycleCities();
-        //TODO: add blue flash on the screen, signifying HIGHER to be correct
     }
     // user is incorrect
     else {
@@ -94,11 +100,7 @@ function handleClick(choice) {
         const gameOverScreen = document.querySelector(".game-over");
         gameOverScreen.classList.add("visible");
 
-        // get transition length
-        const rawTime = getComputedStyle(gameOverScreen).getPropertyValue('--transition-length');
-
-        // parse string to remove "ms"
-        const delayInMs = parseFloat(rawTime); 
+        const delayInMs = getTransitionLengthMS(gameOverScreen);
 
         // --transition-length long timeout to avoid next round rendering before the GAME OVER screen is visible
         setTimeout(() => {
@@ -107,14 +109,49 @@ function handleClick(choice) {
     }
 }
 
-function toggleUnits() {
+function getTransitionLengthMS(element) {
 
-    if(unit=="C") unit = "F";
-    else if(unit=="F") unit = "C";
+    const rawTime = getComputedStyle(element).getPropertyValue('--transition-length').trim();
+
+    if(rawTime != "") return parseFloat(rawTime); 
+    else return 0;
+}
+
+function flashFilter(color) {
+
+    const popUpLeft = document.getElementById("color-popup-left");
+    const popUpRight = document.getElementById("color-popup-right");
+    
+    const delayInMS = getTransitionLengthMS(popUpLeft);
+
+    if(color!="red" && color!="blue") return;
+    popUpLeft.classList.add(`${color}-filter`);
+    popUpRight.classList.add(`${color}-filter`);
+
+    setTimeout(() => {
+    popUpLeft.classList.remove(`${color}-filter`);
+    popUpRight.classList.remove(`${color}-filter`);
+    }, delayInMS);
+}
+
+function toggleTemperatureUnits() {
+
+    if(temperatureUnit=="C") temperatureUnit = "F";
+    else if(temperatureUnit=="F") temperatureUnit = "C";
 
     applyTemperature();
 
-    document.getElementById("unit-button").setAttribute('data-unit', unit);
+    document.getElementById("unit-button").setAttribute('data-unit', temperatureUnit);
+}
+
+function toggleHeightUnits() {
+
+    if(heightUnit=="m") heightUnit = "ft";
+    else if(heightUnit=="ft") heightUnit = "m";
+
+    applyElevation();
+
+    document.getElementById("height-button").setAttribute('data-unit', heightUnit);
 }
 
 function playAgain() {
@@ -255,7 +292,7 @@ async function fetchCityImage(city) {
                 // return an array of only the randomly selected image
                 return [imageArray[randomIndex]];
             } else {
-                return imageArray;
+                return [imageArray[0]];
             }
 
         } else {
@@ -285,14 +322,18 @@ async function getWeatherInCity(city) {
         
         const data = await response.json();
         
-        if (data.main) {
+        if (data.temperature !== null) {
 
-            const temperature = data.main.temp;
+            const temperature = data.temperature;
             const timezone = data.timezone;
+            const elevation = data.elevation;
+
+            console.log("Elevation is " + elevation);
 
             return {
                 temperature: temperature,
-                timezone: timezone
+                timezone: timezone,
+                elevation: elevation
             };
 
         } else {
@@ -436,19 +477,11 @@ function formatEmoji(city) {
 }
 
 function formatTemperature(celsiusTemp) {
-    if (unit === "C") {
+    if (temperatureUnit === "C") {
         return celsiusTemp.toFixed(2);
-    } else if (unit === "F") {
+    } else if (temperatureUnit === "F") {
         return (celsiusTemp * (9/5) + 32).toFixed(2);
     }
-}
-
-function swapUnits() {
-    // TODO add button + change button's appearance based on current unit
-    if(unit=="C") unit="F";
-    else unit="C";
-    // re-render the temperature with the other unit
-    applyTemperature();
 }
 
 function applyTemperature() {
@@ -456,9 +489,31 @@ function applyTemperature() {
     const leftTemperature = document.getElementById("left-temp");
 
     if(cityObjects[0].weather) {
-        leftTemperature.innerHTML = `${formatTemperature(cityObjects[0].weather.temperature)}°${unit}`;
+        leftTemperature.innerHTML = `${formatTemperature(cityObjects[0].weather.temperature)}°${temperatureUnit}`;
     } else {
-        leftTemperature.innerHTML = `--.--°${unit}`;
+        leftTemperature.innerHTML = `--.--°${temperatureUnit}`;
+    }
+}
+
+function formatElevation(meterHeight) {
+    if (heightUnit === "m") {
+        return Math.floor(meterHeight);
+    } else if (heightUnit === "ft") {
+        return Math.floor(meterHeight*3.281)
+    }
+}
+
+function applyElevation() {
+    
+    const leftElevation = document.getElementById("elevation-left");
+    const rightElevation = document.getElementById("elevation-right");
+
+    if(cityObjects[0].weather && cityObjects[0].weather.elevation !== null) {
+        leftElevation.innerHTML = `${formatElevation(cityObjects[0].weather.elevation)}${heightUnit}`
+        rightElevation.innerHTML = `${formatElevation(cityObjects[1].weather.elevation)}${heightUnit}`
+    } else {
+        leftElevation.innerHTML = `<i>?</i> ${heightUnit}`
+        rightElevation.innerHTML = `<i>?</i> ${heightUnit}`
     }
 }
 
@@ -503,6 +558,7 @@ function applyStyles() {
     }
 
     applyTemperature();
+    applyElevation();
 
     document.getElementById("left-emoji").innerHTML = formatEmoji(cityObjects[0].city);
     document.getElementById("right-emoji").innerHTML = formatEmoji(cityObjects[1].city);

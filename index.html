@@ -17,7 +17,8 @@
         i
         <div class="info-tooltip">
         City data provided by <a href="https://simplemaps.com/data/world-cities" target="_blank">SimpleMaps</a><br>
-        Weather data provided by <a href="https://openweathermap.org/" target="_blank">OpenWeather API</a>
+        Weather data provided by <a href="https://openweathermap.org/" target="_blank">OpenWeather API</a><br>
+        Elevation data provided by <a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a>
         </div>
     </div>
     <div class="landing-popup">Click anywhere to begin!</div>
@@ -26,10 +27,18 @@
 </div>
 
 <div class="split-container">
-    <button id="unit-button" data-unit="C"></button>
 
-    <div class="split-side split-right"></div>
-    <div class="split-side split-left"></div>
+    <div id="unit-buttons">
+        <button class="unit-button" id="temperature-button" data-unit="C"></button>
+        <button class="unit-button" id="height-button" data-unit="m"></button>
+    </div>
+
+    <div class="split-side split-right">
+        <div id="color-popup-right" class="color-popup"></div>
+    </div>
+    <div class="split-side split-left">
+        <div id="color-popup-left" class="color-popup"></div>
+    </div>
 
     <div class="copyright-right">
         <div class="image-copyright" id="copyright-right">Image: <a href="" target="_blank"></a></div>
