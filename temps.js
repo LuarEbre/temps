@@ -220,7 +220,7 @@ function initializeParser() {
 }
 
 function initializeHoverEffects() {
-    const buttons = document.querySelectorAll('#higher-button, #lower-button, #unit-button, #play-again-button');
+    const buttons = document.querySelectorAll('#higher-button, #lower-button, #temperature-button, #height-button, #play-again-button');
 
     buttons.forEach(btn => {
         btn.addEventListener('mousemove', (e) => {
