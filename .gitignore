@@ -1,5 +1,6 @@
 .vscode/settings.json
 .env
+node_modules
 node_modules/papaparse/.eslintrc.js
 node_modules/papaparse/bower.json
 node_modules/papaparse/Gruntfile.js
