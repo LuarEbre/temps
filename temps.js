@@ -2,59 +2,60 @@
                                        VARIABLES & CONSTANTS
 =================================================================================================*/
 
-const gameStates = {
-    score: 0,
-    highscore: 0,
-    cities: [],
-    cumulativeWeights: [],
-    totalWeight: 0,
-    temperatureUnit: "C",
-    heightUnit: "m"
-};
+(function() {
+    const gameStates = {
+        score: 0,
+        highscore: 0,
+        cities: [],
+        cumulativeWeights: [],
+        totalWeight: 0,
+        temperatureUnit: "C",
+        heightUnit: "m"
+    };
 
-let cityObjects = [
-    // left city
-    { city: null, images: null, weather: null },
-    // right city
-    { city: null, images: null, weather: null },
-    // cached city
-    { city: null, images: null, weather: null }
-];
+    let cityObjects = [
+        // left city
+        { city: null, images: null, weather: null },
+        // right city
+        { city: null, images: null, weather: null },
+        // cached city
+        { city: null, images: null, weather: null }
+    ];
 
-// all DOM elements which get used repeatedly throughout the gameplay
-const DOM = {
+    // all DOM elements which get used repeatedly throughout the gameplay
+    const DOM = {
 
-    higherButton: document.getElementById("higher-button"),
-    lowerButton: document.getElementById("lower-button"),
+        higherButton: document.getElementById("higher-button"),
+        lowerButton: document.getElementById("lower-button"),
 
-    leftTemperature: document.getElementById("left-temp"),
+        leftTemperature: document.getElementById("left-temp"),
 
-    leftTime: document.getElementById("local-time-left"),
-    rightTime: document.getElementById("local-time-right"),
+        leftTime: document.getElementById("local-time-left"),
+        rightTime: document.getElementById("local-time-right"),
 
-    leftElevation: document.getElementById("elevation-left"),
-    rightElevation: document.getElementById("elevation-right"),
+        leftElevation: document.getElementById("elevation-left"),
+        rightElevation: document.getElementById("elevation-right"),
 
-    currentScore: document.getElementById("current-score"),
-    highscore: document.getElementById("highscore"),
+        currentScore: document.getElementById("current-score"),
+        highscore: document.getElementById("highscore"),
 
-    leftCityString: document.getElementById("left-city"),
-    rightCityString: document.getElementById("right-city"),
-    leftCityStringRight: document.getElementById("left-city-2"),
+        leftCityString: document.getElementById("left-city"),
+        rightCityString: document.getElementById("right-city"),
+        leftCityStringRight: document.getElementById("left-city-2"),
 
-    leftSide: document.querySelector('.split-left'),
-    rightSide: document.querySelector('.split-right'),
+        leftSide: document.querySelector('.split-left'),
+        rightSide: document.querySelector('.split-right'),
 
-    leftCopyright: document.querySelector("#copyright-left a"),
-    rightCopyright: document.querySelector("#copyright-right a"),
-    photoCreditLeft: document.getElementById("accreditation-left"),
-    photoCreditRight: document.getElementById("accreditation-right"),
+        leftCopyright: document.querySelector("#copyright-left a"),
+        rightCopyright: document.querySelector("#copyright-right a"),
+        photoCreditLeft: document.getElementById("accreditation-left"),
+        photoCreditRight: document.getElementById("accreditation-right"),
 
-    leftEmoji: document.getElementById("left-emoji"),
-    rightEmoji: document.getElementById("right-emoji")
-};
+        leftEmoji: document.getElementById("left-emoji"),
+        rightEmoji: document.getElementById("right-emoji")
+    };
 
-let clockInterval = null;
+    let clockInterval = null;
 
 /* ================================================================================================
                                            INITIALIZATION
@@ -166,7 +167,6 @@ function initializeParser() {
     complete: function(results) {
 
         gameStates.cities = results.data;
-        console.log(`CSV loaded! ${gameStates.cities.length} cities available!`);
         
         gameStates.cities.forEach(city => {
         const weight = Number(city.weight || 0);
@@ -376,8 +376,6 @@ async function getWeatherInCity(city) {
             const timezone = data.timezone;
             const elevation = data.elevation;
 
-            console.log("Elevation is " + elevation);
-
             return {
                 temperature: temperature,
                 timezone: timezone,
@@ -486,18 +484,15 @@ async function drawInitialCities() {
     // apply styles which can already be applied, with fallback images before the images have been loaded
     applyStyles();
 
-    console.log(`Fetching image for ${cityObjects[0].city.city_ascii}...`);
     cityObjects[0].images = await fetchCityImage(cityObjects[0].city);
     cityObjects[0].weather = await getWeatherInCity(cityObjects[0].city);
     
-    console.log(`Fetching image for ${cityObjects[1].city.city_ascii}...`);
     cityObjects[1].images = await fetchCityImage(cityObjects[1].city);
     cityObjects[1].weather = await getWeatherInCity(cityObjects[1].city);
 
     // apply styles once both images & weather are loaded
     applyStyles();
 
-    console.log(`Fetching image for ${cityObjects[2].city.city_ascii}...`);
     cityObjects[2].images = await fetchCityImage(cityObjects[2].city);
     cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
 
@@ -632,3 +627,5 @@ function applyStyles() {
 
 // start game
 init();
+
+})();
