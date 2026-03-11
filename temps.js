@@ -1,10 +1,15 @@
-let allCities = [];
-let cumulativeWeights = [];
-let totalWeight = 0;
+/* ================================================================================================
+                                       VARIABLES & CONSTANTS
+=================================================================================================*/
 
-let clockInterval = null;
-
-let score = 0;
+const gameStates = {
+    score: 0,
+    cities: [],
+    cumulativeWeights: [],
+    totalWeight: 0,
+    temperatureUnit: "C",
+    heightUnit: "m"
+};
 
 let cityObjects = [
     // left city
@@ -15,19 +20,38 @@ let cityObjects = [
     { city: null, images: null, weather: null }
 ];
 
-/** @type {"C" | "F"} */
-let temperatureUnit = "C";
+// all DOM elements which get used repeatedly throughout the gameplay
+const DOM = {
+    higherButton: document.getElementById("higher-button"),
+    lowerButton: document.getElementById("lower-button"),
+    leftTemperature: document.getElementById("left-temp"),
+    leftTime: document.getElementById("local-time-left"),
+    rightTime: document.getElementById("local-time-right"),
+    leftElevation: document.getElementById("elevation-left"),
+    rightElevation: document.getElementById("elevation-right"),
+    currentScore: document.getElementById("current-score"),
+    leftCityString: document.getElementById("left-city"),
+    rightCityString: document.getElementById("right-city"),
+    leftCityStringRight: document.getElementById("left-city-2"),
+    leftSide: document.querySelector('.split-left'),
+    leftCopyright: document.querySelector("#copyright-left a"),
+    rightSide: document.querySelector('.split-right'),
+    rightCopyright: document.querySelector("#copyright-right a"),
+    photoCreditLeft: document.getElementById("accreditation-left"),
+    photoCreditRight: document.getElementById("accreditation-right"),
+    leftEmoji: document.getElementById("left-emoji"),
+    rightEmoji: document.getElementById("right-emoji")
+};
 
-/** @type {"m" | "ft"} */
-let heightUnit = "m";
+let clockInterval = null;
 
-function startLiveClocks() {
+/* ================================================================================================
+                                           INITIALIZATION
+=================================================================================================*/
+
+function initializeLiveClocks() {
 
     if (clockInterval) clearInterval(clockInterval);
-
-    // get both local-time blocks
-    const leftTime = document.getElementById("local-time-left");
-    const rightTime = document.getElementById("local-time-right");
 
     // run loop every 1000ms
     clockInterval = setInterval(() => {
@@ -36,7 +60,7 @@ function startLiveClocks() {
 
         if (cityObjects[0].weather) {
             const localMs1 = now + (cityObjects[0].weather.timezone * 1000);
-            leftTime.innerHTML = new Date(localMs1).toLocaleTimeString('en-US', { 
+            DOM.leftTime.innerHTML = new Date(localMs1).toLocaleTimeString('en-US', { 
                 timeZone: 'UTC', 
                 hour: '2-digit', 
                 minute: '2-digit',
@@ -46,7 +70,7 @@ function startLiveClocks() {
 
         if (cityObjects[1].weather) {
             const localMs2 = now + (cityObjects[1].weather.timezone * 1000);
-            rightTime.innerHTML = new Date(localMs2).toLocaleTimeString('en-US', { 
+            DOM.rightTime.innerHTML = new Date(localMs2).toLocaleTimeString('en-US', { 
                 timeZone: 'UTC', 
                 hour: '2-digit', 
                 minute: '2-digit',
@@ -56,118 +80,23 @@ function startLiveClocks() {
     }, 1000);
 }
 
-function initializeButtons() {
+function initializeHoverEffects() {
+    const buttons = document.querySelectorAll('#higher-button, #lower-button, #temperature-button, #height-button, #play-again-button');
 
-    document.getElementById("higher-button").addEventListener('click', () => handleClick("higher"));
-    document.getElementById("lower-button").addEventListener('click', () => handleClick("lower"));
-    document.getElementById("temperature-button").addEventListener('click', () => toggleTemperatureUnits());
-    document.getElementById("height-button").addEventListener('click', () => toggleHeightUnits());
-    document.getElementById("play-again-button").addEventListener('click', () => playAgain());
-}
+    buttons.forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
 
-function handleClick(choice) {
-
-    // if a city object hasn't been loaded, do nothing
-    if(!cityObjects[0] || !cityObjects[1]) {
-        return;
-    }
-
-    // higher = true if right city's temperature is higher
-    const isHigher = (cityObjects[0].weather.temperature <= cityObjects[1].weather.temperature);
-
-    // user has correctly identified the right city to have a higher temperature
-    if(isHigher&&(choice=="higher")) {
-
-        flashFilter("red");
-        score++;
-        cycleCities();
-    }
-    // user has correctly identified the right city to have a lower temperature
-    else if(!isHigher&&(choice=="lower")) {
-
-        flashFilter("blue");
-        score++;
-        cycleCities();
-    }
-    // user is incorrect
-    else {
-
-        // display user's score
-        const scoreDisplay = document.getElementById("final-score");
-        scoreDisplay.innerHTML = score;
-
-        // fade in GAME OVER screen
-        const gameOverScreen = document.querySelector(".game-over");
-        gameOverScreen.classList.add("visible");
-
-        const delayInMs = getTransitionLengthMS(gameOverScreen);
-
-        // --transition-length long timeout to avoid next round rendering before the GAME OVER screen is visible
-        setTimeout(() => {
-            drawTwoRandomCities();
-        }, delayInMs);
-    }
-}
-
-function getTransitionLengthMS(element) {
-
-    const rawTime = getComputedStyle(element).getPropertyValue('--transition-length').trim();
-
-    if(rawTime != "") return parseFloat(rawTime); 
-    else return 0;
-}
-
-function flashFilter(color) {
-
-    const popUpLeft = document.getElementById("color-popup-left");
-    const popUpRight = document.getElementById("color-popup-right");
-    
-    const delayInMS = getTransitionLengthMS(popUpLeft);
-
-    if(color!="red" && color!="blue") return;
-    popUpLeft.classList.add(`${color}-filter`);
-    popUpRight.classList.add(`${color}-filter`);
-
-    setTimeout(() => {
-    popUpLeft.classList.remove(`${color}-filter`);
-    popUpRight.classList.remove(`${color}-filter`);
-    }, delayInMS);
-}
-
-function toggleTemperatureUnits() {
-
-    if(temperatureUnit=="C") temperatureUnit = "F";
-    else if(temperatureUnit=="F") temperatureUnit = "C";
-
-    applyTemperature();
-
-    document.getElementById("unit-button").setAttribute('data-unit', temperatureUnit);
-}
-
-function toggleHeightUnits() {
-
-    if(heightUnit=="m") heightUnit = "ft";
-    else if(heightUnit=="ft") heightUnit = "m";
-
-    applyElevation();
-
-    document.getElementById("height-button").setAttribute('data-unit', heightUnit);
-}
-
-function playAgain() {
-
-    score = 0;
-    document.getElementById("current-score").innerHTML = score;
-    document.querySelector(".game-over").classList.remove("visible");
-}
-
-function initializeCopyright() {
-
-    const copyrightDiv = document.getElementById('copyright-text');
-    const copyrightDiv2 = document.getElementById('game-over-copyright-text');
-    const currentYear = new Date().getFullYear();
-    copyrightDiv.textContent = `© ${currentYear} temps`;
-    copyrightDiv2.textContent = `© ${currentYear} temps`;
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const xPercent = Math.round((x / rect.width) * 100);
+            const yPercent = Math.round((y / rect.height) * 100);
+            
+            btn.style.setProperty('--mouse-x', `${xPercent}%`);
+            btn.style.setProperty('--mouse-y', `${yPercent}%`);
+        });
+    });
 }
 
 function initializeEventListeners() {
@@ -181,6 +110,26 @@ function initializeEventListeners() {
     landingPage.addEventListener('click', () => {
         landingPage.classList.add('fade-out');
     });
+
+    DOM.higherButton.addEventListener('click', () => handleClick("higher"));
+    DOM.lowerButton.addEventListener('click', () => handleClick("lower"));
+    document.getElementById("temperature-button").addEventListener('click', () => toggleTemperatureUnits());
+    document.getElementById("height-button").addEventListener('click', () => toggleHeightUnits());
+    document.getElementById("play-again-button").addEventListener('click', () => playAgain());
+}
+
+function initializeCopyright() {
+
+    const copyrightDiv = document.getElementById('copyright-text');
+    const copyrightDiv2 = document.getElementById('game-over-copyright-text');
+    const currentYear = new Date().getFullYear();
+    if (currentYear > 2026) {
+        copyrightDiv.textContent = `© 2026 - ${currentYear} temps`;
+        copyrightDiv2.textContent = `© 2026 - ${currentYear} temps`;
+    } else {
+        copyrightDiv.textContent = `© ${currentYear} temps`;
+        copyrightDiv2.textContent = `© ${currentYear} temps`;
+    }
 }
 
 function fadeIn() {
@@ -205,49 +154,126 @@ function initializeParser() {
     skipEmptyLines: true,
     complete: function(results) {
 
-        allCities = results.data;
-        console.log(`CSV loaded! ${allCities.length} cities available!`);
+        gameStates.cities = results.data;
+        console.log(`CSV loaded! ${gameStates.cities.length} cities available!`);
         
-        allCities.forEach(city => {
+        gameStates.cities.forEach(city => {
         const weight = Number(city.weight || 0);
-        totalWeight += weight;
-        cumulativeWeights.push(totalWeight);
+        gameStates.totalWeight += weight;
+        gameStates.cumulativeWeights.push(gameStates.totalWeight);
         });
         // draw the two initial cities that will be displayed
-        drawTwoRandomCities();
+        drawInitialCities();
     }
-    });
-}
-
-function initializeHoverEffects() {
-    const buttons = document.querySelectorAll('#higher-button, #lower-button, #temperature-button, #height-button, #play-again-button');
-
-    buttons.forEach(btn => {
-        btn.addEventListener('mousemove', (e) => {
-            const rect = btn.getBoundingClientRect();
-
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const xPercent = Math.round((x / rect.width) * 100);
-            const yPercent = Math.round((y / rect.height) * 100);
-            
-            btn.style.setProperty('--mouse-x', `${xPercent}%`);
-            btn.style.setProperty('--mouse-y', `${yPercent}%`);
-        });
     });
 }
 
 function init() {
 
-    startLiveClocks();
+    initializeLiveClocks();
     initializeParser();
     initializeCopyright();
     initializeEventListeners();
-    initializeButtons();
     initializeHoverEffects();
     fadeIn();
 }
+
+/* ================================================================================================
+                                           BUTTON EVENTS
+=================================================================================================*/
+
+function handleClick(choice) {
+
+    // if a city object hasn't been loaded, do nothing
+    if(!cityObjects[0] || !cityObjects[1]) {
+        return;
+    }
+
+    // higher = true if right city's temperature is higher
+    const isHigher = (cityObjects[0].weather.temperature <= cityObjects[1].weather.temperature);
+
+    // user has correctly identified the right city to have a higher temperature
+    if(isHigher&&(choice=="higher")) {
+
+        flashFilter("red");
+        gameStates.score++;
+        cycleCities();
+    }
+    // user has correctly identified the right city to have a lower temperature
+    else if(!isHigher&&(choice=="lower")) {
+
+        flashFilter("blue");
+        gameStates.score++;
+        cycleCities();
+    }
+    // user is incorrect
+    else {
+
+        // display user's score
+        const scoreDisplay = document.getElementById("final-score");
+        scoreDisplay.innerHTML = gameStates.score;
+
+        // fade in GAME OVER screen
+        const gameOverScreen = document.querySelector(".game-over");
+        gameOverScreen.classList.add("visible");
+
+        const delayInMs = getTransitionLengthMS(gameOverScreen);
+
+        // --transition-length long timeout to avoid next round rendering before the GAME OVER screen is visible
+        setTimeout(() => {
+            // draw new cities for smooth replayability
+            drawInitialCities();
+        }, delayInMs);
+    }
+}
+
+function flashFilter(color) {
+
+    const popUpLeft = document.getElementById("color-popup-left");
+    const popUpRight = document.getElementById("color-popup-right");
+    
+    const delayInMS = getTransitionLengthMS(popUpLeft);
+
+    if(color!="red" && color!="blue") return;
+    popUpLeft.classList.add(`${color}-filter`);
+    popUpRight.classList.add(`${color}-filter`);
+
+    setTimeout(() => {
+    popUpLeft.classList.remove(`${color}-filter`);
+    popUpRight.classList.remove(`${color}-filter`);
+    }, delayInMS);
+}
+
+function toggleTemperatureUnits() {
+
+    if(gameStates.temperatureUnit=="C") gameStates.temperatureUnit = "F";
+    else if(gameStates.temperatureUnit=="F") gameStates.temperatureUnit = "C";
+
+    applyTemperature();
+
+    document.getElementById("temperature-button").setAttribute('data-unit', gameStates.temperatureUnit);
+}
+
+function toggleHeightUnits() {
+
+    if(gameStates.heightUnit=="m") gameStates.heightUnit = "ft";
+    else if(gameStates.heightUnit=="ft") gameStates.heightUnit = "m";
+
+    applyElevation();
+
+    document.getElementById("height-button").setAttribute('data-unit', gameStates.heightUnit);
+}
+
+function playAgain() {
+
+    gameStates.score = 0;
+    DOM.currentScore.innerHTML = gameStates.score;
+    document.querySelector(".game-over").classList.remove("visible");
+}
+
+/* ================================================================================================
+                                             API CALLS
+=================================================================================================*/
 
 // PEXELS API CALL
 async function fetchCityImage(city) {
@@ -348,109 +374,42 @@ async function getWeatherInCity(city) {
     }
 }
 
-// binary search approach utilizing cumulativeWeights
-function getWeightedRandomCity() {
+/* ================================================================================================
+                                          HELPER FUNCTIONS
+=================================================================================================*/
 
-    const target = Math.random() * totalWeight;
-    let low = 0;
-    let high = cumulativeWeights.length - 1;
+// gets an element's transition length, e.g. "550ms" and trims it to only the float
+// element must have a "--transition-length" variable and it must be saved in ms
+function getTransitionLengthMS(element) {
 
-    while (low < high) {
-        const mid = Math.floor((low + high) / 2);
-        if (cumulativeWeights[mid] < target) {
-            low = mid + 1;
-        } else {
-            high = mid;
-        }
-    }
-    return allCities[low];
+    const rawTime = getComputedStyle(element).getPropertyValue('--transition-length').trim();
+
+    if(rawTime != "") return parseFloat(rawTime); 
+    else return 0;
 }
 
-// only used once for the intial drawing of 2 cities
-async function drawTwoRandomCities() {
-
-    // disable buttons while waiting for cities & data to load
-    document.getElementById("higher-button").disabled = true;
-    document.getElementById("lower-button").disabled = true;
-
-    cityObjects[0].city = getWeightedRandomCity();
-    cityObjects[1].city = getWeightedRandomCity();
-    // already fetch the next cities image to decrease loading time
-    cityObjects[2].city = getWeightedRandomCity();
-
-    while (cityObjects[0].city.id === cityObjects[1].city.id) {
-        cityObjects[1].city = getWeightedRandomCity();
+// formats temperature to current unit with 2 decimal places
+function formatTemperature(celsiusTemp) {
+    if (gameStates.temperatureUnit === "C") {
+        return celsiusTemp.toFixed(2);
+    } else if (gameStates.temperatureUnit === "F") {
+        return (celsiusTemp * (9/5) + 32).toFixed(2);
     }
-
-    while (cityObjects[1].city.id == cityObjects[2].city.id) {
-        cityObjects[2].city = getWeightedRandomCity();
-    }
-
-    // apply styles which can already be applied, with fallback images before the images have been loaded
-    applyStyles();
-
-    console.log(`Fetching image for ${cityObjects[0].city.city_ascii}...`);
-    cityObjects[0].images = await fetchCityImage(cityObjects[0].city);
-    cityObjects[0].weather = await getWeatherInCity(cityObjects[0].city);
-    
-    console.log(`Fetching image for ${cityObjects[1].city.city_ascii}...`);
-    cityObjects[1].images = await fetchCityImage(cityObjects[1].city);
-    cityObjects[1].weather = await getWeatherInCity(cityObjects[1].city);
-
-    // apply styles once both images & weather are loaded
-    applyStyles();
-
-    // only re-enable after all (important) data has been loaded (ignoring cached city)
-    document.getElementById("higher-button").disabled = false;
-    document.getElementById("lower-button").disabled = false;
-
-    console.log(`Fetching image for ${cityObjects[2].city.city_ascii}...`);
-    cityObjects[2].images = await fetchCityImage(cityObjects[2].city);
-    cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
-
-    
 }
 
-async function cycleCities() {
-
-    // disable buttons while waiting for cities & data to load
-    document.getElementById("higher-button").disabled = true;
-    document.getElementById("lower-button").disabled = true;
-
-    cityObjects[0].city = cityObjects[1].city;
-    cityObjects[1].city = cityObjects[2].city;
-    cityObjects[0].images = cityObjects[1].images;
-    cityObjects[1].images = cityObjects[2].images;
-    cityObjects[0].weather = cityObjects[1].weather;
-    cityObjects[1].weather = cityObjects[2].weather;
-
-    if (!document.startViewTransition) {
-        // Fallback: Just snap instantly like normal for older browsers
-        applyStyles(); 
-    } else {
-        // 2. The Magic: The browser handles the crossfade automatically!
-        document.startViewTransition(() => {
-            applyStyles();
-        });
+// format elevation to current unit and floor it remove any decimal places
+function formatElevation(meterHeight) {
+    if (gameStates.heightUnit === "m") {
+        return Math.floor(meterHeight);
+    } else if (gameStates.heightUnit === "ft") {
+        return Math.floor(meterHeight*3.281)
     }
-
-    // get new cached city + image after cycling
-    cityObjects[2].city = getWeightedRandomCity();
-
-    // ensure unique next city
-    while (cityObjects[2].city.id === cityObjects[0].city.id || cityObjects[2].city.id === cityObjects[1].city.id) {
-        cityObjects[2].city = getWeightedRandomCity();
-    }
-    cityObjects[2].images = await fetchCityImage(cityObjects[2].city);
-    cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
-
-    // only re-enable after data has been cycled and loaded
-    document.getElementById("higher-button").disabled = false;
-    document.getElementById("lower-button").disabled = false;
 }
 
+// format's a city's iso2 code into a flag emoji
 function formatEmoji(city) {
 
+    // override if no flag for territory exists
     const flagOverrides = {
         "QZ": "GB",
         "XD": "GB",
@@ -476,92 +435,177 @@ function formatEmoji(city) {
     );
 }
 
-function formatTemperature(celsiusTemp) {
-    if (temperatureUnit === "C") {
-        return celsiusTemp.toFixed(2);
-    } else if (temperatureUnit === "F") {
-        return (celsiusTemp * (9/5) + 32).toFixed(2);
+/* ================================================================================================
+                                               LOGIC
+=================================================================================================*/
+
+// only used for the intial drawing of 2 cities at the beginning of each round
+// assigns all 3 cityObjects a random city (checks for duplicates), along with image and weather data
+async function drawInitialCities() {
+
+    // disable buttons while waiting for cities & data to load
+    DOM.higherButton.disabled = true;
+    DOM.lowerButton.disabled = true;
+
+    cityObjects[0].city = getWeightedRandomCity();
+    cityObjects[1].city = getWeightedRandomCity();
+
+    // already fetch the next cities image to decrease loading time
+    cityObjects[2].city = getWeightedRandomCity();
+
+    while (cityObjects[0].city.id === cityObjects[1].city.id) {
+        cityObjects[1].city = getWeightedRandomCity();
     }
+
+    while (cityObjects[1].city.id == cityObjects[2].city.id) {
+        cityObjects[2].city = getWeightedRandomCity();
+    }
+
+    // apply styles which can already be applied, with fallback images before the images have been loaded
+    applyStyles();
+
+    console.log(`Fetching image for ${cityObjects[0].city.city_ascii}...`);
+    cityObjects[0].images = await fetchCityImage(cityObjects[0].city);
+    cityObjects[0].weather = await getWeatherInCity(cityObjects[0].city);
+    
+    console.log(`Fetching image for ${cityObjects[1].city.city_ascii}...`);
+    cityObjects[1].images = await fetchCityImage(cityObjects[1].city);
+    cityObjects[1].weather = await getWeatherInCity(cityObjects[1].city);
+
+    // apply styles once both images & weather are loaded
+    applyStyles();
+
+    console.log(`Fetching image for ${cityObjects[2].city.city_ascii}...`);
+    cityObjects[2].images = await fetchCityImage(cityObjects[2].city);
+    cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
+
+    // only re-enable after ALL cities including images & weather have been loaded
+    DOM.higherButton.disabled = false;
+    DOM.lowerButton.disabled = false;
 }
+
+// cycles the cities from right to left, with the right city becoming the new left city, and the cached city being swapped into the right city
+// caches a new city for smooth gameplay
+async function cycleCities() {
+
+    // disable buttons while waiting for cities & data to load
+    DOM.higherButton.disabled = true;
+    DOM.lowerButton.disabled = true;
+
+    cityObjects[0].city = cityObjects[1].city;
+    cityObjects[1].city = cityObjects[2].city;
+    cityObjects[0].images = cityObjects[1].images;
+    cityObjects[1].images = cityObjects[2].images;
+    cityObjects[0].weather = cityObjects[1].weather;
+    cityObjects[1].weather = cityObjects[2].weather;
+
+    // smoothen transition between city images where possible
+    if (!document.startViewTransition) {
+        applyStyles(); 
+    } else {
+        document.startViewTransition(() => {
+            applyStyles();
+        });
+    }
+
+    // get new cached city + image after cycling
+    cityObjects[2].city = getWeightedRandomCity();
+
+    // ensure unique next city
+    while (cityObjects[2].city.id === cityObjects[0].city.id || cityObjects[2].city.id === cityObjects[1].city.id) {
+        cityObjects[2].city = getWeightedRandomCity();
+    }
+    cityObjects[2].images = await fetchCityImage(cityObjects[2].city);
+    cityObjects[2].weather = await getWeatherInCity(cityObjects[2].city);
+
+    // only re-enable after data has been cycled and loaded
+    DOM.higherButton.disabled = false;
+    DOM.lowerButton.disabled = false;
+}
+
+// binary search approach utilizing cumulativeWeights
+function getWeightedRandomCity() {
+
+    const target = Math.random() * gameStates.totalWeight;
+    let low = 0;
+    let high = gameStates.cumulativeWeights.length - 1;
+
+    while (low < high) {
+        const mid = Math.floor((low + high) / 2);
+        if (gameStates.cumulativeWeights[mid] < target) {
+            low = mid + 1;
+        } else {
+            high = mid;
+        }
+    }
+    return gameStates.cities[low];
+}
+
+/* ================================================================================================
+                                                 UI
+=================================================================================================*/
 
 function applyTemperature() {
 
-    const leftTemperature = document.getElementById("left-temp");
-
     if(cityObjects[0].weather) {
-        leftTemperature.innerHTML = `${formatTemperature(cityObjects[0].weather.temperature)}°${temperatureUnit}`;
+        DOM.leftTemperature.innerHTML = `${formatTemperature(cityObjects[0].weather.temperature)}°${gameStates.temperatureUnit}`;
     } else {
-        leftTemperature.innerHTML = `--.--°${temperatureUnit}`;
-    }
-}
-
-function formatElevation(meterHeight) {
-    if (heightUnit === "m") {
-        return Math.floor(meterHeight);
-    } else if (heightUnit === "ft") {
-        return Math.floor(meterHeight*3.281)
+        DOM.leftTemperature.innerHTML = `--.--°${gameStates.temperatureUnit}`;
     }
 }
 
 function applyElevation() {
-    
-    const leftElevation = document.getElementById("elevation-left");
-    const rightElevation = document.getElementById("elevation-right");
 
     if(cityObjects[0].weather && cityObjects[0].weather.elevation !== null) {
-        leftElevation.innerHTML = `${formatElevation(cityObjects[0].weather.elevation)}${heightUnit}`
-        rightElevation.innerHTML = `${formatElevation(cityObjects[1].weather.elevation)}${heightUnit}`
+        DOM.leftElevation.innerHTML = `${formatElevation(cityObjects[0].weather.elevation)}${gameStates.heightUnit}`
+        DOM.rightElevation.innerHTML = `${formatElevation(cityObjects[1].weather.elevation)}${gameStates.heightUnit}`
     } else {
-        leftElevation.innerHTML = `<i>?</i> ${heightUnit}`
-        rightElevation.innerHTML = `<i>?</i> ${heightUnit}`
+        DOM.leftElevation.innerHTML = `<i>?</i> ${gameStates.heightUnit}`
+        DOM.rightElevation.innerHTML = `<i>?</i> ${gameStates.heightUnit}`
     }
 }
 
 function applyStyles() {
 
-    document.getElementById("current-score").innerHTML = score;
+    DOM.currentScore.innerHTML = gameStates.score;
     
     // change UI strings to match cities
-    document.getElementById("left-city").innerHTML = `${cityObjects[0].city.city_ascii}, ${cityObjects[0].city.country}'s`;
-    document.getElementById("right-city").innerHTML = `${cityObjects[1].city.city_ascii}, ${cityObjects[1].city.country}'s`;
-    document.getElementById("left-city-2").innerHTML = `than ${cityObjects[0].city.city_ascii}'s current temperature`;
-
-    const leftSide = document.querySelector('.split-left');
-    const leftCopyright = document.querySelector("#copyright-left a");
-    const rightSide = document.querySelector('.split-right');
-    const rightCopyright = document.querySelector("#copyright-right a");
+    DOM.leftCityString.innerHTML = `${cityObjects[0].city.city_ascii}, ${cityObjects[0].city.country}'s`;
+    DOM.rightCityString.innerHTML = `${cityObjects[1].city.city_ascii}, ${cityObjects[1].city.country}'s`;
+    DOM.leftCityStringRight.innerHTML = `than ${cityObjects[0].city.city_ascii}'s current temperature`;
 
     // change background images to match cities
-    // change photography accredation to match image
+    // change photography accreditation to match image
     if (cityObjects[0].images && cityObjects[0].images.length > 0) {
-        leftSide.style.backgroundImage = `url('${cityObjects[0].images[0].url}')`;
-        leftCopyright.href = cityObjects[0].images[0].photographerLink;
-        leftCopyright.innerText = cityObjects[0].images[0].photographer;
-        document.getElementById("accreditation-left").innerHTML = "<i>provided by Pexels</i>"
+        DOM.leftSide.style.backgroundImage = `url('${cityObjects[0].images[0].url}')`;
+        DOM.leftCopyright.href = cityObjects[0].images[0].photographerLink;
+        DOM.leftCopyright.innerText = cityObjects[0].images[0].photographer;
+        DOM.photoCreditLeft.innerHTML = "<i>provided by Pexels</i>"
     } else {
-        leftSide.style.backgroundImage = `url(https://placehold.co/1920x1080?text=?)`;
-        leftCopyright.href = "";
-        leftCopyright.innerText = "";
-        document.getElementById("accreditation-left").innerHTML = ""
+        DOM.leftSide.style.backgroundImage = `url(https://placehold.co/1920x1080?text=?)`;
+        DOM.leftCopyright.href = "";
+        DOM.leftCopyright.innerText = "";
+        DOM.photoCreditLeft.innerHTML = ""
     }
 
     if (cityObjects[1].images && cityObjects[1].images.length > 0) {
-        rightSide.style.backgroundImage = `url('${cityObjects[1].images[0].url}')`;
-        rightCopyright.href = cityObjects[1].images[0].photographerLink;
-        rightCopyright.innerText = cityObjects[1].images[0].photographer;
-        document.getElementById("accreditation-right").innerHTML = "<i>provided by Pexels</i>"
+        DOM.rightSide.style.backgroundImage = `url('${cityObjects[1].images[0].url}')`;
+        DOM.rightCopyright.href = cityObjects[1].images[0].photographerLink;
+        DOM.rightCopyright.innerText = cityObjects[1].images[0].photographer;
+        DOM.photoCreditRight.innerHTML = "<i>provided by Pexels</i>"
     } else {
-        rightSide.style.backgroundImage = `url(https://placehold.co/1920x1080?text=?)`;
-        rightCopyright.href = "";
-        rightCopyright.innerText = "";
-        document.getElementById("accreditation-right").innerHTML = "";
+        DOM.rightSide.style.backgroundImage = `url(https://placehold.co/1920x1080?text=?)`;
+        DOM.rightCopyright.href = "";
+        DOM.rightCopyright.innerText = "";
+        DOM.photoCreditRight.innerHTML = "";
     }
 
     applyTemperature();
     applyElevation();
 
-    document.getElementById("left-emoji").innerHTML = formatEmoji(cityObjects[0].city);
-    document.getElementById("right-emoji").innerHTML = formatEmoji(cityObjects[1].city);
+    DOM.leftEmoji.innerHTML = formatEmoji(cityObjects[0].city);
+    DOM.rightEmoji.innerHTML = formatEmoji(cityObjects[1].city);
 }
 
+// start game
 init();
