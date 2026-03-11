@@ -3,7 +3,7 @@ exports.handler = async function(event) {
     const searchQuery = event.queryStringParameters.query;
     const API_KEY = process.env.PEXELS_KEY;
 
-    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=40&orientation=landscape&people_count=0`;
+    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=20&orientation=landscape&people_count=0`;
 
     try {
         const response = await fetch(url, {

@@ -4,6 +4,7 @@
 
 const gameStates = {
     score: 0,
+    highscore: 0,
     cities: [],
     cumulativeWeights: [],
     totalWeight: 0,
@@ -22,23 +23,33 @@ let cityObjects = [
 
 // all DOM elements which get used repeatedly throughout the gameplay
 const DOM = {
+
     higherButton: document.getElementById("higher-button"),
     lowerButton: document.getElementById("lower-button"),
+
     leftTemperature: document.getElementById("left-temp"),
+
     leftTime: document.getElementById("local-time-left"),
     rightTime: document.getElementById("local-time-right"),
+
     leftElevation: document.getElementById("elevation-left"),
     rightElevation: document.getElementById("elevation-right"),
+
     currentScore: document.getElementById("current-score"),
+    highscore: document.getElementById("highscore"),
+
     leftCityString: document.getElementById("left-city"),
     rightCityString: document.getElementById("right-city"),
     leftCityStringRight: document.getElementById("left-city-2"),
+
     leftSide: document.querySelector('.split-left'),
-    leftCopyright: document.querySelector("#copyright-left a"),
     rightSide: document.querySelector('.split-right'),
+
+    leftCopyright: document.querySelector("#copyright-left a"),
     rightCopyright: document.querySelector("#copyright-right a"),
     photoCreditLeft: document.getElementById("accreditation-left"),
     photoCreditRight: document.getElementById("accreditation-right"),
+
     leftEmoji: document.getElementById("left-emoji"),
     rightEmoji: document.getElementById("right-emoji")
 };
@@ -168,13 +179,19 @@ function initializeParser() {
     });
 }
 
+function loadHighscore() {
+    gameStates.highscore = localStorage.getItem("temps_highscore") || 0;
+    DOM.highscore.innerHTML = gameStates.highscore;
+}
+
 function init() {
 
-    initializeLiveClocks();
-    initializeParser();
     initializeCopyright();
+    initializeParser();
     initializeEventListeners();
     initializeHoverEffects();
+    initializeLiveClocks();
+    loadHighscore();
     fadeIn();
 }
 
@@ -197,6 +214,7 @@ function handleClick(choice) {
 
         flashFilter("red");
         gameStates.score++;
+        gameStates.highscore = Math.max(gameStates.score, gameStates.highscore);
         cycleCities();
     }
     // user has correctly identified the right city to have a lower temperature
@@ -204,10 +222,14 @@ function handleClick(choice) {
 
         flashFilter("blue");
         gameStates.score++;
+        gameStates.highscore = Math.max(gameStates.score, gameStates.highscore);
         cycleCities();
     }
     // user is incorrect
     else {
+
+        // save user's highscore
+        localStorage.setItem("temps_highscore", gameStates.highscore);
 
         // display user's score
         const scoreDisplay = document.getElementById("final-score");
@@ -568,6 +590,7 @@ function applyElevation() {
 function applyStyles() {
 
     DOM.currentScore.innerHTML = gameStates.score;
+    DOM.highscore.innerHTML = gameStates.highscore;
     
     // change UI strings to match cities
     DOM.leftCityString.innerHTML = `${cityObjects[0].city.city_ascii}, ${cityObjects[0].city.country}'s`;
