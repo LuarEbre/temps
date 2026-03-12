@@ -58,9 +58,90 @@ body, html {
     height: 50%;
     
     position: absolute;
-    top: 50%;
+    top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.landing-buttons {
+    position: absolute;
+    top: 82.5%;
+    left: 0;
+    width: 100%;
+    
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5%;
+    opacity: 0;
+}
+
+.button-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* This natively forces the text to the dead-center of the button */
+    
+    width: 15%;
+}
+
+#daily-button, #freeplay-button {
+    width: 100%; 
+    height: 8vh;
+    
+    transform: translateX(-50%);
+    border-radius: 12px;
+    border: none;
+    color: rgba(51,76,67,1);
+    
+    font-family: inherit;
+    font-size: 2vmin;
+    font-weight: bold;
+    cursor: pointer;
+
+    transition: all .2s ease-in-out;
+}
+
+#daily-button:hover, #freeplay-button:hover {
+    transform: translateX(-50%) scale(1.035);
+}
+
+#daily-button:disabled {
+    filter: saturate(-50%);
+    opacity: 0.5;
+}
+
+#daily-button:disabled:hover {
+    transform: translateX(-50%) scale(1);
+}
+
+.timer-label {
+    opacity: 1;
+    color: var(--temps-mint);
+    font-size: 1.75vmin;
+    margin-bottom: 1vmin;
+    
+    white-space: nowrap; 
+    text-align: center;
+}
+
+#next-daily {
+    font-weight: bold;
+}
+
+#next-daily-label {
+    opacity: 0;
+}
+
+.hidden-spacer {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+}
+
+.fade-in {
+    opacity: 1;
+    transition: opacity 0.5s ease-in;
 }
 
 .information {
@@ -160,28 +241,6 @@ body, html {
     text-align: center;
     font-weight: bold;
     font-size: 1.5vmin;
-}
-
-.landing-popup {
-    opacity: 0;
-
-    position: absolute;
-    top: 5%;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    color: var(--temps-mint);
-
-    font-family: Helvetica, Arial, sans-serif;
-    text-align: center;
-    font-weight: bold;
-    font-size: 2rem;
-}
-
-.fade-in {
-    opacity: 1;
-    transition: opacity 0.5s ease-in;
 }
 
 #unit-buttons {
@@ -624,6 +683,15 @@ body, html {
 
 #local-time-left, #local-time-right, #elevation-left, #elevation-right {
     font-size: 4vmin;
+}
+
+#seed {
+    position: absolute;
+    right: 3vmin;
+    bottom: 3vmin;
+    
+    font-size: 2vmin;
+    text-align: right;
 }
 
 .game-over {
