@@ -3,7 +3,11 @@
 =================================================================================================*/
 
 (function() {
+
     const gameStates = {
+        rng: null,
+        seed: 0,
+        skipLanding: false,
         score: 0,
         highscore: 0,
         cities: [],
@@ -186,13 +190,26 @@ function loadHighscore() {
 
 function init() {
 
+    // handle routing based on /, /daily, /xyz (daily and custom links skip the landing page)
+    handleRouting();
+    
     initializeCopyright();
+
+    if(gameStates.skipLanding) {
+        // hide landing page if a seed is entered
+        const landingPage = document.querySelector('.landing');
+        landingPage.classList.add('fade-out');
+    } else {
+        // fade in landing page elements
+        fadeIn();
+    }
+
+    console.log(gameStates.seed);
     initializeParser();
     initializeEventListeners();
     initializeHoverEffects();
     initializeLiveClocks();
     loadHighscore();
-    fadeIn();
 }
 
 /* ================================================================================================
@@ -238,14 +255,6 @@ function handleClick(choice) {
         // fade in GAME OVER screen
         const gameOverScreen = document.querySelector(".game-over");
         gameOverScreen.classList.add("visible");
-
-        const delayInMs = getTransitionLengthMS(gameOverScreen);
-
-        // --transition-length long timeout to avoid next round rendering before the GAME OVER screen is visible
-        setTimeout(() => {
-            // draw new cities for smooth replayability
-            drawInitialCities();
-        }, delayInMs);
     }
 }
 
@@ -287,6 +296,11 @@ function toggleHeightUnits() {
 }
 
 function playAgain() {
+
+    // generate new 
+    gameStates.seed = generateRandomSeed();
+    gameStates.rng = new Math.seedrandom(gameStates.seed);
+    window.location.href = '/playagain';
 
     gameStates.score = 0;
     DOM.currentScore.innerHTML = gameStates.score;
@@ -397,6 +411,64 @@ async function getWeatherInCity(city) {
 /* ================================================================================================
                                           HELPER FUNCTIONS
 =================================================================================================*/
+
+function generateRandomSeed() {
+    const randomSeedString = Math.random().toString(36).substring(2, 12);
+    gameStates.rng = new Math.seedrandom(randomSeedString);
+    gameStates.seed = randomSeedString;
+    window.history.replaceState({}, '', `/${randomSeedString}`); 
+}
+
+function handleRouting() {
+    // eliminate all forward slashes
+    let path = window.location.pathname.replace(/\//g, '');
+    
+    // if no path is entered
+    if (path === "") {
+        generateRandomSeed();
+    }
+    // if "Play Again?" is pressed
+    else if (path === "playagain") {
+        generateRandomSeed();
+
+        gameStates.skipLanding = true;
+    }
+    // if /daily is entered
+    else if (path.toLowerCase() === 'daily') {
+        const now = new Date();
+        const utcYear = now.getUTCFullYear();
+        const utcMonth = String(now.getUTCMonth() + 1).padStart(2, '0');
+        const utcDay = String(now.getUTCDate()).padStart(2, '0');
+
+        // build the current UTC date, e.g. "2026-03-12"
+        const dailySeed = `${utcYear}-${utcMonth}-${utcDay}`; 
+        const lastDaily = "lol" || 
+            localStorage.getItem("temps_daily_date");
+        // if user has already played daily seed
+        if (lastDaily === dailySeed) {
+            generateRandomSeed();
+        } else {
+            gameStates.rng = new Math.seedrandom(dailySeed);
+            gameStates.seed = dailySeed;
+
+            // write to localStorage to prevent multiple attempts per day
+            localStorage.setItem("temps_daily_date", dailySeed);
+
+            gameStates.skipLanding = true;
+        }
+    }
+    
+    // if anything else is entered, e.g., /12345 or /custom-word
+    // only take first 10 characters into account
+    else {
+        const seed = path.substring(0,10);
+        gameStates.rng = new Math.seedrandom(seed);
+        gameStates.seed = seed;
+        window.history.replaceState({}, '', `/${seed}`); 
+
+        gameStates.skipLanding = true;
+    }
+}
 
 // gets an element's transition length, e.g. "550ms" and trims it to only the float
 // element must have a "--transition-length" variable and it must be saved in ms
@@ -543,7 +615,8 @@ async function cycleCities() {
 // binary search approach utilizing cumulativeWeights
 function getWeightedRandomCity() {
 
-    const target = Math.random() * gameStates.totalWeight;
+    // generate 32-bit float from 0.0 to 1.0 using seeded rng
+    const target = ((gameStates.rng.quick()) * gameStates.totalWeight);
     let low = 0;
     let high = gameStates.cumulativeWeights.length - 1;
 
