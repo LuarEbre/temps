@@ -21,8 +21,23 @@
         Elevation data provided by <a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a>
         </div>
     </div>
-    <div class="landing-popup">Click anywhere to begin!</div>
+    <div class="github-link">
+        <a href="https://github.com/LuarEbre" target="_blank">
+            <img id="github-logo" src="Images/SVGs/github.svg" alt="GitHub Repository">
+        </a>
+    </div>
     <div class="landing-logo"></div>
+    
+    <div class="landing-buttons">
+        <div class="button-column">
+            <div id="next-daily-label" class="timer-label">Next Daily available in <span id="next-daily">23:59:59</span></div>
+            <button id="daily-button" class="unit-button">Daily Mode</button>
+        </div>
+        <div class="button-column">
+            <div class="timer-label hidden-spacer">placeholder</div>
+            <button id="freeplay-button" class="unit-button">Freeplay</button>
+        </div>
+    </div>
     <div class="copyright-text" id="copyright-text"></div>
 </div>
 
@@ -64,7 +79,7 @@
             <h4>Current Score</h4>
             <h3><span id="current-score">0</span></h3>
             <br>
-            <h4>Highscore</h4>
+            <h4 id="highscore-header">Highscore</h4>
             <h3><span id="highscore">0</span></h3>
         </div>
 
@@ -90,6 +105,9 @@
 
     <div class="right-half">
 
+        <div class="seed">
+            <h4><span id="seed">xxxxxxxxxx 🎲</span></h4>
+        </div>
         <div class="flag-emoji">
             <h2><span id="right-emoji">🏳️</span></h2>
         </div>
@@ -123,10 +141,17 @@
     <img src="Images/Logo/temps.png" class="game-over-logo">
     <h1>GAME OVER!</h1>
     <h2>Final Score<br><span id="final-score">0</span></h2>
-    <button id="play-again-button">Play Again?</button>
+    <div class="game-over-buttons">
+        <button id="play-again-button">Play Again?</button>
+        <button id="share-button">
+            <img id="share-logo" src="Images/SVGs/share.svg">
+            <span id="copy-popup">Invite Link copied!</span>
+        </button>
+    </div>
     <div class="copyright-text" id="game-over-copyright-text"></div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="temps.js"></script>
 </body>
