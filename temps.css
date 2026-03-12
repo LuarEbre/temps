@@ -156,7 +156,7 @@ body, html {
     align-items: center;
 
     background-color: transparent;
-    border: 0.2rem solid var(--temps-mint);
+    border: 0.2vmin solid var(--temps-mint);
     margin: 0;
     border-radius: 100rem;
     color: var(--temps-mint);
@@ -174,7 +174,7 @@ body, html {
 
 .information:hover {
     transform: scale(1.1);
-    border: 0.3rem solid var(--temps-mint);
+    border: 0.3vmin solid var(--temps-mint);
     margin: -0.15rem;
 }
 
@@ -227,6 +227,30 @@ body, html {
 
 .info-tooltip a:hover {
     filter: drop-shadow(0px 0px 4px #d3fbee90);
+}
+
+.github-link {
+    position: absolute;
+    width: 3.4vmin;
+    height: 3.4vmin;
+    right: 2vmin;
+    top: 2vmin;
+    
+    filter: drop-shadow(0px 0px 4px rgba(51,76,67,0.0));
+
+    cursor: pointer;
+
+    transition: all 0.175s ease-in-out;
+}
+
+.github-link:hover {
+    filter: drop-shadow(0px 0px 4px rgba(51,76,67,0.35));
+    transform: scale(1.08);
+}
+
+#github-logo {
+    width: 100%;
+    height: 100%;
 }
 
 .copyright-text {
@@ -593,7 +617,7 @@ body, html {
     padding-left: 2%;
     padding-right: 2%;
     
-    color: #f1f1f1 !important;
+    color: #f1f1f1;
     text-shadow: 1px 2px 8px rgba(0,0,0,0.5);
     transition: all 0.225s ease-in-out;
 }
@@ -711,12 +735,11 @@ body, html {
     color: var(--temps-mint);
     z-index: 100;
     
-    /* 1. THE FLEXBOX MAGIC */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 4vmin; /* 2. This creates perfect, automatic spacing between every item */
+    gap: 4vmin;
 
     font-family: Helvetica, Arial, sans-serif;
     font-weight: bold;
@@ -757,35 +780,113 @@ body, html {
     font-size: 5.5vmin;
 }
 
-#play-again-button {
-    width: 20%;
+.game-over-buttons {
+    display: flex;
+    flex-direction: row;
+
+    width: 27%;
     height: 7%;
+    
+    align-items: center;
+    gap: 5vmin;
+}
 
-    border: 0px solid transparent;
+#play-again-button, #share-button {
+
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+
+    height: 100%;
     border-radius: 1vmin;
+
+    border: none;
     background: linear-gradient(90deg,rgba(200, 235, 225, 1) 0%, rgba(211, 251, 238, .9) 50%, rgba(200, 235, 225, 1) 100%);
-
-    color: #334C43;
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: 3vmin;
-
     filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15));
-    text-shadow: 2px 2px 16px rgba(51,76,67,0.3);
-
+    
     transition: all 0.2s ease-in-out;
 }
 
-#play-again-button:hover {
+#play-again-button {
+    flex: 1;
+    
+    color: #334C43;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 3vmin;
+    text-shadow: 2px 2px 16px rgba(51,76,67,0.3);
+}
+
+#share-button {
+    position: relative;
+
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    
+    padding: 1.5vmin;
+}
+
+#play-again-button:hover, #share-button:hover {
     background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(211, 251, 238, 1) 0%, rgba(51,76,67,.25) 400%);
     cursor: pointer;
-
     transform: scale(1.02);
 }
 
-#play-again-button:active {
-    filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15));
+#share-button:hover {
+    transform: scale(1.06);
+}
 
+#share-logo {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+
+    filter: drop-shadow(2px 2px 16px rgba(51,76,67,0.3));
+}
+
+#play-again-button:active, #share-button:active {
+    filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15));
     transform: scale(0.75);
+}
+
+#copy-popup {
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    
+    transform: translateX(-50%) translateY(0vmin); 
+    opacity: 0;
+    pointer-events: none;
+    
+    background-color: #334C4380;
+    color: var(--temps-mint);
+    padding: 1vmin 2vmin;
+    border-radius: 1vmin;
+    font-family: inherit;
+    font-size: 1.5vmin;
+    font-weight: bold;
+    white-space: nowrap;
+    
+    transition: all 0.3s ease-in-out;
+}
+
+#copy-popup::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: .6vmin;
+    border-style: solid;
+    border-color: #334C4380 transparent transparent transparent;
+    filter: drop-shadow(0px 4px 12px rgba(51,76,67,0.35))
+}
+
+#copy-popup.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 #game-over-copyright-text {

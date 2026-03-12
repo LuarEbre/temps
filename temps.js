@@ -144,7 +144,7 @@ function initializeLiveClocks() {
 }
 
 function initializeHoverEffects() {
-    const buttons = document.querySelectorAll('#higher-button, #lower-button, #temperature-button, #height-button, #play-again-button, #daily-button, #freeplay-button');
+    const buttons = document.querySelectorAll('#higher-button, #lower-button, #temperature-button, #height-button, #play-again-button, #share-button, #daily-button, #freeplay-button');
 
     buttons.forEach(btn => {
         btn.addEventListener('mousemove', (e) => {
@@ -171,6 +171,7 @@ function initializeEventListeners() {
     document.getElementById("temperature-button").addEventListener('click', () => toggleTemperatureUnits());
     document.getElementById("height-button").addEventListener('click', () => toggleHeightUnits());
     document.getElementById("play-again-button").addEventListener('click', () => playAgain());
+    document.getElementById("share-button").addEventListener('click', () => copyTextPopup());
     document.getElementById("daily-button").addEventListener('click', () => { window.location.href = '/daily'; });
     document.getElementById("freeplay-button").addEventListener('click', () => { landingPage.classList.add('fade-out'); });
 }
@@ -358,6 +359,26 @@ function toggleHeightUnits() {
 function playAgain() {
     // call /playagain, which generates a new session, along with a new seed, and skips the landing page
     window.location.href = '/playagain';
+}
+
+function copyTextPopup() {
+
+    const currentUrl = window.location.href;
+
+    const copyText = `I just got a score of ${gameStates.score} in temps! 🌡️\nTry beating my score here: ${currentUrl}`
+
+    navigator.clipboard.writeText(copyText).then(() => {
+        
+        const popup = document.getElementById('copy-popup');
+        popup.classList.add('show');
+        
+        setTimeout(() => {
+            popup.classList.remove('show');
+        }, 1750);
+        
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
 }
 
 /* ================================================================================================
