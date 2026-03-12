@@ -6,9 +6,12 @@
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css&logoColor=white)
 
+<br>
+<br>
+
 <p align="center">
-  <img src="Images/Logo/temps_light.png#gh-light-mode-only" width="550" alt="Temps Logo Light"/>
-  <img src="Images/Logo/temps.png#gh-dark-mode-only" width="550" alt="Temps Logo Dark"/>
+  <img src="../Images/Logo/temps_light.png#gh-light-mode-only" width="550" alt="Temps Logo Light"/>
+  <img src="../Images/Logo/temps.png#gh-dark-mode-only" width="550" alt="Temps Logo Dark"/>
 </p>
 
 > **temps** > */ tɑ̃ /* • *noun, fr.*
