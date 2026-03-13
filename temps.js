@@ -93,6 +93,17 @@ function initializeSeedDisplay() {
     }
 }
 
+function initializeUnits() {
+    gameStates.temperatureUnit = localStorage.getItem("temps_temperature_unit") || "C";
+    gameStates.heightUnit = localStorage.getItem("temps_height_unit") || "m";
+
+    document.getElementById("temperature-button").setAttribute('data-unit', gameStates.temperatureUnit);
+    document.getElementById("height-button").setAttribute('data-unit', gameStates.heightUnit);
+
+    applyTemperature();
+    applyElevation();
+}
+
 function initializeLiveClocks() {
 
     if (clockInterval) clearInterval(clockInterval);
@@ -253,7 +264,8 @@ function init() {
         fadeIn();
     }
 
-    initializeSeedDisplay()
+    initializeUnits();
+    initializeSeedDisplay();
     initializeParser();
     initializeEventListeners();
     initializeHoverEffects();
@@ -344,6 +356,7 @@ function toggleTemperatureUnits() {
     applyTemperature();
 
     document.getElementById("temperature-button").setAttribute('data-unit', gameStates.temperatureUnit);
+    localStorage.setItem("temps_temperature_unit", `${gameStates.temperatureUnit}`);
 }
 
 function toggleHeightUnits() {
@@ -354,6 +367,7 @@ function toggleHeightUnits() {
     applyElevation();
 
     document.getElementById("height-button").setAttribute('data-unit', gameStates.heightUnit);
+    localStorage.setItem("temps_height_unit", `${gameStates.heightUnit}`);
 }
 
 function playAgain() {
