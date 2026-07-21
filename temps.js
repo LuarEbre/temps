@@ -93,6 +93,17 @@ function initializeSeedDisplay() {
     }
 }
 
+function initializeUnits() {
+    gameStates.temperatureUnit = localStorage.getItem("temps_temperature_unit") || "C";
+    gameStates.heightUnit = localStorage.getItem("temps_height_unit") || "m";
+
+    document.getElementById("temperature-button").setAttribute('data-unit', gameStates.temperatureUnit);
+    document.getElementById("height-button").setAttribute('data-unit', gameStates.heightUnit);
+
+    applyTemperature();
+    applyElevation();
+}
+
 function initializeLiveClocks() {
 
     if (clockInterval) clearInterval(clockInterval);
@@ -253,7 +264,8 @@ function init() {
         fadeIn();
     }
 
-    initializeSeedDisplay()
+    initializeUnits();
+    initializeSeedDisplay();
     initializeParser();
     initializeEventListeners();
     initializeHoverEffects();
@@ -344,6 +356,7 @@ function toggleTemperatureUnits() {
     applyTemperature();
 
     document.getElementById("temperature-button").setAttribute('data-unit', gameStates.temperatureUnit);
+    localStorage.setItem("temps_temperature_unit", `${gameStates.temperatureUnit}`);
 }
 
 function toggleHeightUnits() {
@@ -354,6 +367,7 @@ function toggleHeightUnits() {
     applyElevation();
 
     document.getElementById("height-button").setAttribute('data-unit', gameStates.heightUnit);
+    localStorage.setItem("temps_height_unit", `${gameStates.heightUnit}`);
 }
 
 function playAgain() {
@@ -423,13 +437,13 @@ async function fetchCityImage(city) {
                 };
             });
 
-            if (isObscure) {
-                const randomIndex = Math.floor(Math.random() * imageArray.length);
-                // return an array of only the randomly selected image
-                return [imageArray[randomIndex]];
-            } else {
-                return [imageArray[0]];
-            }
+           const selectedImage = isObscure 
+                ? imageArray[Math.floor(Math.random() * imageArray.length)]
+                : imageArray[0];
+
+            await preloadImage(selectedImage.url);
+
+            return [selectedImage];
 
         } else {
             // should not happen
@@ -485,6 +499,25 @@ async function getWeatherInCity(city) {
 /* ================================================================================================
                                           HELPER FUNCTIONS
 =================================================================================================*/
+
+// preloads an image based off its url to avoid a blank screen when images are initially swapped in
+function preloadImage(url) {
+    return new Promise((resolve) => {
+        if (!url) return resolve(null);
+        
+        const img = new Image();
+        img.src = url;
+
+        if (img.decode) {
+            img.decode()
+                .then(() => resolve(url))
+                .catch(() => resolve(null));
+        } else {
+            img.onload = () => resolve(url);
+            img.onerror = () => resolve(null);
+        }
+    });
+}
 
 function generateRandomSeed() {
     const randomSeedString = Math.random().toString(36).substring(2, 12);
