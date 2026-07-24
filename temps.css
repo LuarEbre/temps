@@ -435,17 +435,21 @@ body, html {
 }
 
 .color-popup {
-
-    --transition-length: 450ms;
-
+    --transition-length: 500ms;
     width: 100%;
     height: 100%;
-
-    background-color: #00000000;
-
-    filter: blur(0px);
-
-    transition: all var(--transition-length) ease-in-out;
+    
+    opacity: 0; 
+    background-color: transparent;
+    pointer-events: none;
+    
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    
+    transition: opacity var(--transition-length) ease-out,
+                background-color var(--transition-length) ease-out;
+        
+    will-change: opacity, background-color;
 }
 
 #color-popup-left {
@@ -458,8 +462,10 @@ body, html {
 }
 
 .color-popup.red-filter, .color-popup.blue-filter {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    opacity: 1;
+
+    transition-duration: 50ms; 
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .color-popup.red-filter {

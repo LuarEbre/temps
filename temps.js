@@ -15,7 +15,8 @@
         cumulativeWeights: [],
         totalWeight: 0,
         temperatureUnit: "C",
-        heightUnit: "m"
+        heightUnit: "m",
+        flashDuration: 0
     };
 
     let cityObjects = [
@@ -58,7 +59,10 @@
         photoCreditRight: document.getElementById("accreditation-right"),
 
         leftEmoji: document.getElementById("left-emoji"),
-        rightEmoji: document.getElementById("right-emoji")
+        rightEmoji: document.getElementById("right-emoji"),
+
+        popUpLeft: document.getElementById("color-popup-left"),
+        popUpRight: document.getElementById("color-popup-right")
     };
 
     let clockInterval = null;
@@ -264,6 +268,7 @@ function init() {
         fadeIn();
     }
 
+    gameStates.flashDuration = getTransitionLengthMS(DOM.popUpLeft);
     initializeUnits();
     initializeSeedDisplay();
     initializeParser();
@@ -301,7 +306,7 @@ function handleClick(choice) {
         flashFilter("red");
         gameStates.score++;
         gameStates.highscore = Math.max(gameStates.score, gameStates.highscore);
-        cycleCities();
+        setTimeout(() => cycleCities(), 5);
     }
     // user has correctly identified the right city to have a lower temperature
     else if(!isHigher&&(choice=="lower")) {
@@ -309,7 +314,7 @@ function handleClick(choice) {
         flashFilter("blue");
         gameStates.score++;
         gameStates.highscore = Math.max(gameStates.score, gameStates.highscore);
-        cycleCities();
+        setTimeout(() => cycleCities(), 5);
     }
     // user is incorrect
     else {
@@ -332,20 +337,15 @@ function handleClick(choice) {
 }
 
 function flashFilter(color) {
-
-    const popUpLeft = document.getElementById("color-popup-left");
-    const popUpRight = document.getElementById("color-popup-right");
     
-    const delayInMS = getTransitionLengthMS(popUpLeft);
-
     if(color!="red" && color!="blue") return;
-    popUpLeft.classList.add(`${color}-filter`);
-    popUpRight.classList.add(`${color}-filter`);
+    DOM.popUpLeft.classList.add(`${color}-filter`);
+    DOM.popUpRight.classList.add(`${color}-filter`);
 
     setTimeout(() => {
-    popUpLeft.classList.remove(`${color}-filter`);
-    popUpRight.classList.remove(`${color}-filter`);
-    }, delayInMS);
+    DOM.popUpLeft.classList.remove(`${color}-filter`);
+    DOM.popUpRight.classList.remove(`${color}-filter`);
+    }, gameStates.flashDuration);
 }
 
 function toggleTemperatureUnits() {
