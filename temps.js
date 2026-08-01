@@ -218,26 +218,25 @@ function fadeIn() {
     }, 100);
 }
 
-function initializeParser() {
+async function loadCityData() {
 
-    Papa.parse("worldcities.csv", {
-    download: true,       
-    header: true,
-    dynamicTyping: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-
-        gameStates.cities = results.data;
+    try {
+        const response = await fetch("worldcities.json");
+        const data = await response.json();
+        
+        gameStates.cities = data;
         
         gameStates.cities.forEach(city => {
-        const weight = Number(city.weight || 0);
-        gameStates.totalWeight += weight;
-        gameStates.cumulativeWeights.push(gameStates.totalWeight);
+            const weight = Number(city.weight || 0);
+            gameStates.totalWeight += weight;
+            gameStates.cumulativeWeights.push(gameStates.totalWeight);
         });
-        // draw the two initial cities that will be displayed
+
         drawInitialCities();
+        
+    } catch (error) {
+        console.error("Error loading worldcities.json:", error);
     }
-    });
 }
 
 function loadHighscore() {
@@ -271,7 +270,7 @@ function init() {
     gameStates.flashDuration = getTransitionLengthMS(DOM.popUpLeft);
     initializeUnits();
     initializeSeedDisplay();
-    initializeParser();
+    loadCityData();
     initializeEventListeners();
     initializeHoverEffects();
     initializeLiveClocks();
