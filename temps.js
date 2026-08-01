@@ -318,13 +318,16 @@ function handleClick(choice) {
     // user is incorrect
     else {
 
+        // immediately disable buttons to prevent further clicks while GAME OVER screen is fading in
+        DOM.higherButton.disabled = true;
+        DOM.lowerButton.disabled = true;
+
         // save user's highscore
         if(gameStates.isDaily) {
             localStorage.setItem("temps_daily_highscore", gameStates.highscore);
-        } else {
-            localStorage.setItem("temps_highscore", gameStates.highscore);
-        }
-
+        } 
+        localStorage.setItem("temps_highscore", gameStates.highscore);
+        
         // display user's score
         const scoreDisplay = document.getElementById("final-score");
         scoreDisplay.innerHTML = gameStates.score;
@@ -332,6 +335,19 @@ function handleClick(choice) {
         // fade in GAME OVER screen
         const gameOverScreen = document.querySelector(".game-over");
         gameOverScreen.classList.add("visible");
+
+        const playAgainBtn = document.getElementById("play-again-button");
+        playAgainBtn.disabled = true;
+
+        const transitionDuration = getTransitionLengthMS(gameOverScreen);
+
+        // quietly set up next game after the GAME OVER screen is 100% opaque
+        setTimeout(() => {
+            generateRandomSeed();
+            drawInitialCities().then(() => {
+                playAgainBtn.disabled = false;
+            });
+        }, transitionDuration);
     }
 }
 
@@ -370,8 +386,13 @@ function toggleHeightUnits() {
 }
 
 function playAgain() {
-    // call /playagain, which generates a new session, along with a new seed, and skips the landing page
-    window.location.href = '/playagain';
+    
+    gameStates.score = 0;
+    gameStates.isDaily = false;
+    initializeSeedDisplay(); 
+    
+    const gameOverScreen = document.querySelector(".game-over");
+    gameOverScreen.classList.remove("visible");
 }
 
 function copyTextPopup() {
@@ -550,12 +571,7 @@ function handleRouting() {
     if (path === "") {
         generateRandomSeed();
     }
-    // if "Play Again?" is pressed
-    else if (path === "playagain") {
-        generateRandomSeed();
 
-        gameStates.skipLanding = true;
-    }
     // if /daily is entered
     else if (path.toLowerCase() === 'daily') {
         const now = new Date();
@@ -619,7 +635,7 @@ function formatElevation(meterHeight) {
     }
 }
 
-// format's a city's iso2 code into a flag emoji
+// formats a city's iso2 code into a flag emoji
 function formatEmoji(city) {
 
     // override if no flag for territory exists
