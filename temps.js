@@ -388,6 +388,9 @@ function toggleHeightUnits() {
 
 function playAgain() {
     
+    const playAgainBtn = document.getElementById("play-again-button");
+    playAgainBtn.disabled = true;
+
     gameStates.score = 0;
     DOM.currentScore.innerHTML = 0;
 
@@ -525,6 +528,10 @@ async function getWeatherInCity(city) {
                                           HELPER FUNCTIONS
 =================================================================================================*/
 
+function disableLandingPage() {
+    document.getElementById("landing").disabled = true;
+
+}
 // preloads an image based off its url to avoid a blank screen when images are initially swapped in
 function preloadImage(url) {
     return new Promise((resolve) => {
@@ -808,8 +815,8 @@ function applyStyles() {
     DOM.highscore.innerHTML = gameStates.highscore;
     
     // change UI strings to match cities
-    DOM.leftCityString.innerHTML = `${cityObjects[0].city.city_ascii}, ${cityObjects[0].city.country}'s`;
-    DOM.rightCityString.innerHTML = `${cityObjects[1].city.city_ascii}, ${cityObjects[1].city.country}'s`;
+    DOM.leftCityString.innerHTML = `${cityObjects[0].city.city_ascii}'s`;
+    DOM.rightCityString.innerHTML = `${cityObjects[1].city.city_ascii}'s`;
     DOM.leftCityStringRight.innerHTML = `than ${cityObjects[0].city.city_ascii}'s current temperature`;
 
     // change background images to match cities
