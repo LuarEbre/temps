@@ -218,26 +218,25 @@ function fadeIn() {
     }, 100);
 }
 
-function initializeParser() {
+async function loadCityData() {
 
-    Papa.parse("worldcities.csv", {
-    download: true,       
-    header: true,
-    dynamicTyping: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-
-        gameStates.cities = results.data;
+    try {
+        const response = await fetch("worldcities_filtered.json");
+        const data = await response.json();
+        
+        gameStates.cities = data;
         
         gameStates.cities.forEach(city => {
-        const weight = Number(city.weight || 0);
-        gameStates.totalWeight += weight;
-        gameStates.cumulativeWeights.push(gameStates.totalWeight);
+            const weight = Number(city.weight || 0);
+            gameStates.totalWeight += weight;
+            gameStates.cumulativeWeights.push(gameStates.totalWeight);
         });
-        // draw the two initial cities that will be displayed
+
         drawInitialCities();
+        
+    } catch (error) {
+        console.error("Error loading worldcities.json:", error);
     }
-    });
 }
 
 function loadHighscore() {
@@ -246,6 +245,7 @@ function loadHighscore() {
         document.getElementById("highscore-header").innerHTML = "Daily Highscore";
     } else {
         gameStates.highscore = localStorage.getItem("temps_highscore") || 0;
+        document.getElementById("highscore-header").innerHTML = "Highscore"; 
     }
     
     DOM.highscore.innerHTML = gameStates.highscore;
@@ -271,7 +271,7 @@ function init() {
     gameStates.flashDuration = getTransitionLengthMS(DOM.popUpLeft);
     initializeUnits();
     initializeSeedDisplay();
-    initializeParser();
+    loadCityData();
     initializeEventListeners();
     initializeHoverEffects();
     initializeLiveClocks();
@@ -319,13 +319,16 @@ function handleClick(choice) {
     // user is incorrect
     else {
 
+        // immediately disable buttons to prevent further clicks while GAME OVER screen is fading in
+        DOM.higherButton.disabled = true;
+        DOM.lowerButton.disabled = true;
+
         // save user's highscore
         if(gameStates.isDaily) {
             localStorage.setItem("temps_daily_highscore", gameStates.highscore);
-        } else {
-            localStorage.setItem("temps_highscore", gameStates.highscore);
-        }
-
+        } 
+        localStorage.setItem("temps_highscore", gameStates.highscore);
+        
         // display user's score
         const scoreDisplay = document.getElementById("final-score");
         scoreDisplay.innerHTML = gameStates.score;
@@ -333,6 +336,19 @@ function handleClick(choice) {
         // fade in GAME OVER screen
         const gameOverScreen = document.querySelector(".game-over");
         gameOverScreen.classList.add("visible");
+
+        const playAgainBtn = document.getElementById("play-again-button");
+        playAgainBtn.disabled = true;
+
+        const transitionDuration = getTransitionLengthMS(gameOverScreen);
+
+        // quietly set up next game after the GAME OVER screen is 100% opaque
+        setTimeout(() => {
+            generateRandomSeed();
+            drawInitialCities().then(() => {
+                playAgainBtn.disabled = false;
+            });
+        }, transitionDuration);
     }
 }
 
@@ -371,8 +387,17 @@ function toggleHeightUnits() {
 }
 
 function playAgain() {
-    // call /playagain, which generates a new session, along with a new seed, and skips the landing page
-    window.location.href = '/playagain';
+    
+    gameStates.score = 0;
+    DOM.currentScore.innerHTML = 0;
+
+    gameStates.isDaily = false;
+
+    initializeSeedDisplay();
+    loadHighscore();
+    
+    const gameOverScreen = document.querySelector(".game-over");
+    gameOverScreen.classList.remove("visible");
 }
 
 function copyTextPopup() {
@@ -551,12 +576,7 @@ function handleRouting() {
     if (path === "") {
         generateRandomSeed();
     }
-    // if "Play Again?" is pressed
-    else if (path === "playagain") {
-        generateRandomSeed();
 
-        gameStates.skipLanding = true;
-    }
     // if /daily is entered
     else if (path.toLowerCase() === 'daily') {
         const now = new Date();
@@ -620,7 +640,7 @@ function formatElevation(meterHeight) {
     }
 }
 
-// format's a city's iso2 code into a flag emoji
+// formats a city's iso2 code into a flag emoji
 function formatEmoji(city) {
 
     // override if no flag for territory exists
@@ -667,11 +687,11 @@ async function drawInitialCities() {
     // already fetch the next cities image to decrease loading time
     cityObjects[2].city = getWeightedRandomCity();
 
-    while (cityObjects[0].city.id === cityObjects[1].city.id) {
+    while (cityObjects[0].city === cityObjects[1].city) {
         cityObjects[1].city = getWeightedRandomCity();
     }
 
-    while (cityObjects[1].city.id == cityObjects[2].city.id) {
+    while (cityObjects[1].city === cityObjects[2].city) {
         cityObjects[2].city = getWeightedRandomCity();
     }
 
@@ -724,7 +744,7 @@ async function cycleCities() {
     cityObjects[2].city = getWeightedRandomCity();
 
     // ensure unique next city
-    while (cityObjects[2].city.id === cityObjects[0].city.id || cityObjects[2].city.id === cityObjects[1].city.id) {
+    while (cityObjects[2].city === cityObjects[0].city || cityObjects[2].city === cityObjects[1].city) {
         cityObjects[2].city = getWeightedRandomCity();
     }
 
