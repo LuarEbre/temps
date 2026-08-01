@@ -221,7 +221,7 @@ function fadeIn() {
 async function loadCityData() {
 
     try {
-        const response = await fetch("worldcities.json");
+        const response = await fetch("worldcities_filtered.json");
         const data = await response.json();
         
         gameStates.cities = data;
@@ -245,6 +245,7 @@ function loadHighscore() {
         document.getElementById("highscore-header").innerHTML = "Daily Highscore";
     } else {
         gameStates.highscore = localStorage.getItem("temps_highscore") || 0;
+        document.getElementById("highscore-header").innerHTML = "Highscore"; 
     }
     
     DOM.highscore.innerHTML = gameStates.highscore;
@@ -388,8 +389,12 @@ function toggleHeightUnits() {
 function playAgain() {
     
     gameStates.score = 0;
+    DOM.currentScore.innerHTML = 0;
+
     gameStates.isDaily = false;
-    initializeSeedDisplay(); 
+
+    initializeSeedDisplay();
+    loadHighscore();
     
     const gameOverScreen = document.querySelector(".game-over");
     gameOverScreen.classList.remove("visible");
@@ -682,11 +687,11 @@ async function drawInitialCities() {
     // already fetch the next cities image to decrease loading time
     cityObjects[2].city = getWeightedRandomCity();
 
-    while (cityObjects[0].city.id === cityObjects[1].city.id) {
+    while (cityObjects[0].city === cityObjects[1].city) {
         cityObjects[1].city = getWeightedRandomCity();
     }
 
-    while (cityObjects[1].city.id == cityObjects[2].city.id) {
+    while (cityObjects[1].city === cityObjects[2].city) {
         cityObjects[2].city = getWeightedRandomCity();
     }
 
@@ -739,7 +744,7 @@ async function cycleCities() {
     cityObjects[2].city = getWeightedRandomCity();
 
     // ensure unique next city
-    while (cityObjects[2].city.id === cityObjects[0].city.id || cityObjects[2].city.id === cityObjects[1].city.id) {
+    while (cityObjects[2].city === cityObjects[0].city || cityObjects[2].city === cityObjects[1].city) {
         cityObjects[2].city = getWeightedRandomCity();
     }
 
