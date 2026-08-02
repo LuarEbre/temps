@@ -188,7 +188,10 @@ function initializeEventListeners() {
     document.getElementById("play-again-button").addEventListener('click', () => playAgain());
     document.getElementById("share-button").addEventListener('click', () => copyTextPopup());
     document.getElementById("daily-button").addEventListener('click', () => { window.location.href = '/daily'; });
-    document.getElementById("freeplay-button").addEventListener('click', () => { landingPage.classList.add('fade-out'); });
+    document.getElementById("freeplay-button").addEventListener('click', () => { 
+        landingPage.classList.add('fade-out'); 
+        landingPage.disabled = true;
+    });
 }
 
 function initializeCopyright() {
@@ -253,7 +256,7 @@ function loadHighscore() {
 
 function init() {
 
-    // handle routing based on /, /daily, /xyz (daily and custom links skip the landing page)
+    // handle routing based on /, /seed (custom links skip the landing page)
     handleRouting();
     
     initializeCopyright();
@@ -262,6 +265,7 @@ function init() {
         // hide landing page if a seed is entered
         const landingPage = document.querySelector('.landing');
         landingPage.classList.add('fade-out');
+        landingPage.disabled = true;
     } else {
         // initialize landing page elements
         initializeDailyButton()
@@ -388,6 +392,9 @@ function toggleHeightUnits() {
 
 function playAgain() {
     
+    const playAgainBtn = document.getElementById("play-again-button");
+    playAgainBtn.disabled = true;
+
     gameStates.score = 0;
     DOM.currentScore.innerHTML = 0;
 
@@ -524,6 +531,7 @@ async function getWeatherInCity(city) {
 /* ================================================================================================
                                           HELPER FUNCTIONS
 =================================================================================================*/
+
 
 // preloads an image based off its url to avoid a blank screen when images are initially swapped in
 function preloadImage(url) {
@@ -808,8 +816,8 @@ function applyStyles() {
     DOM.highscore.innerHTML = gameStates.highscore;
     
     // change UI strings to match cities
-    DOM.leftCityString.innerHTML = `${cityObjects[0].city.city_ascii}, ${cityObjects[0].city.country}'s`;
-    DOM.rightCityString.innerHTML = `${cityObjects[1].city.city_ascii}, ${cityObjects[1].city.country}'s`;
+    DOM.leftCityString.innerHTML = `${cityObjects[0].city.city_ascii}'s`;
+    DOM.rightCityString.innerHTML = `${cityObjects[1].city.city_ascii}'s`;
     DOM.leftCityStringRight.innerHTML = `than ${cityObjects[0].city.city_ascii}'s current temperature`;
 
     // change background images to match cities
