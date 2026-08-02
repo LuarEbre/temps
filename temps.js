@@ -188,7 +188,10 @@ function initializeEventListeners() {
     document.getElementById("play-again-button").addEventListener('click', () => playAgain());
     document.getElementById("share-button").addEventListener('click', () => copyTextPopup());
     document.getElementById("daily-button").addEventListener('click', () => { window.location.href = '/daily'; });
-    document.getElementById("freeplay-button").addEventListener('click', () => { landingPage.classList.add('fade-out'); });
+    document.getElementById("freeplay-button").addEventListener('click', () => { 
+        landingPage.classList.add('fade-out'); 
+        landingPage.disabled = true;
+    });
 }
 
 function initializeCopyright() {
@@ -253,7 +256,7 @@ function loadHighscore() {
 
 function init() {
 
-    // handle routing based on /, /daily, /xyz (daily and custom links skip the landing page)
+    // handle routing based on /, /seed (custom links skip the landing page)
     handleRouting();
     
     initializeCopyright();
@@ -262,6 +265,7 @@ function init() {
         // hide landing page if a seed is entered
         const landingPage = document.querySelector('.landing');
         landingPage.classList.add('fade-out');
+        landingPage.disabled = true;
     } else {
         // initialize landing page elements
         initializeDailyButton()
@@ -528,10 +532,7 @@ async function getWeatherInCity(city) {
                                           HELPER FUNCTIONS
 =================================================================================================*/
 
-function disableLandingPage() {
-    document.getElementById("landing").disabled = true;
 
-}
 // preloads an image based off its url to avoid a blank screen when images are initially swapped in
 function preloadImage(url) {
     return new Promise((resolve) => {
