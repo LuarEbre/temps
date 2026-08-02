@@ -276,36 +276,41 @@ body, html {
     gap: 1.75vmin;
 }
 
-.unit-button {
-
-    --mouse-x: 50%;
+.landing-button, .unit-button {
+    --mouse-x: 50%; 
     --mouse-y: 50%;
-    
     position: relative; 
-
-    top: 2%;
-    left: 50%;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+    top: 2%; 
+    left: 50%; 
     z-index: 50;
-    
-    background: radial-gradient(90deg,rgba(241, 241, 241, 1) 0%, rgba(225, 225, 225, .95) 50%, rgba(241, 241, 241, 1) 100%);
-    filter: drop-shadow(0px 0px 4px rgba(31,31,31,0.3));
-    color: #1f1f1f;
-    border: 0 solid transparent;
-    border-radius: 100px;
-    font-size: 1.5vmin;
-
-    width: 5vmin;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    width: 5vmin; 
     height: 5vmin;
-    
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-
+    border: 0 solid transparent; 
+    border-radius: 100px;
+    font: bold 1.5vmin Arial, sans-serif;
     transition: all .2s ease-in-out;
+}
+
+.landing-button { 
+    background: linear-gradient(90deg, #c8ebe1 0%, rgba(211,251,238,.95) 50%, #c8ebe1 100%); 
+    filter: drop-shadow(0 0 4px rgba(51,76,67,.2)); 
+    color: #334c43; 
+}
+
+.landing-button:hover { 
+    background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(211, 251, 238, 1) 0%, rgba(51,76,67,.75) 300%);
+    transform: scale(1.05);
+    filter: drop-shadow(0px 0px 16px rgba(51,76,67,0.25));
+    cursor: pointer;
+}
+
+.unit-button { 
+    background: radial-gradient(90deg, #f1f1f1 0%, rgba(225,225,225,.95) 50%, #f1f1f1 100%); 
+    filter: drop-shadow(0 0 4px rgba(31,31,31,.3)); 
+    color: #1f1f1f; 
 }
 
 .unit-button::before {
@@ -328,7 +333,7 @@ body, html {
     background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(7, 193, 206, 1) 0%, rgba(51,76,67,.75) 300%);
 }
 
-.unit-button:hover {
+.unit-button:hover, .landing-button:hover {
     transform: scale(1.05);
     filter: drop-shadow(0px 0px 16px rgba(31,31,31,0.4));
     cursor: pointer;
